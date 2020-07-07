@@ -1,0 +1,16 @@
+# MacOS
+.DS_Store
+
+# Editors
+.idea/
+.vscode/
+
+# Python
+*.egg-info/
+__pycache__/
+dist/
+.python-version
+
+# Testing
+.pytest_cache/
+.coverage
