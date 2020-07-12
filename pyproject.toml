@@ -23,7 +23,7 @@ classifiers = [
 ]
 
 [tool.taskipy.tasks]
-lint = "pre-commit run --all"
+lint = "poetry run pre-commit run --all"
 test = "task test_cov_missing"
 test_unit = "poetry run pytest tests/"
 test_cov = "task test_unit -- --cov=config_file/"
@@ -47,6 +47,7 @@ taskipy = "^1.2.1"
 black = "^19.10b0"
 sphinx = "^3.1.2"
 sphinx_rtd_theme = "^0.5.0"
+codecov = "^2.1.7"
 
 [tool.black]
 line-length = 88
