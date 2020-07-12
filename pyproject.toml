@@ -5,7 +5,7 @@ description = "Interact with the daemon in the Linux Infrared Remote Control pac
 authors = ["Eugene Triguba <eugenetriguba@gmail.com>"]
 license = "MIT"
 readme = "README.md"
-repository = "https://github.com/Bumblebee-Tester/lirc"
+repository = "https://github.com/eugenetriguba/lirc"
 keywords = [
     "LIRC",
     "IR",
@@ -16,16 +16,20 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: POSIX :: Linux",
     "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
     "Topic :: Software Development :: Testing",
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 
 [tool.taskipy.tasks]
-lint = "pre-commit run --all"
-test = "poetry run task test_unit"
-test_unit = "poetry run pytest -v --cov=lirc/ --cov-report term-missing tests/"
+lint = "poetry run pre-commit run --all"
+test = "task test_cov_missing"
+test_unit = "poetry run pytest tests/"
+test_cov = "task test_unit -- --cov=config_file/"
+test_cov_missing = "task test_cov -- -v --cov-report term-missing"
+test_ci = "task test_cov -- --cov-report=xml"
 test_all = "export LIRC_RUN_LONG_TESTS=true && poetry run task test && unset LIRC_RUN_LONG_TESTS"
-
 
 [tool.poetry.dependencies]
 python = "^3.6"
@@ -41,6 +45,8 @@ pytest-sugar = "^0.9.4"
 bump2version = "^1.0.0"
 taskipy = "^1.2.1"
 black = "^19.10b0"
+sphinx = "^3.1.2"
+sphinx_rtd_theme = "^0.5.0"
 
 [tool.black]
 line-length = 88
