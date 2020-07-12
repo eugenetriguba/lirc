@@ -14,3 +14,6 @@ dist/
 # Testing
 .pytest_cache/
 .coverage
+
+# Docs
+docs/build/
