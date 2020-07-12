@@ -29,7 +29,7 @@ jobs:
         poetry install -v
     - name: Run linters
       run: |
-        poetry run pre-commit run --all
+        poetry run task lint
     - name: Run tests
       run: |
         poetry run task test

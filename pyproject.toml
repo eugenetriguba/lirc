@@ -23,7 +23,7 @@ classifiers = [
 ]
 
 [tool.taskipy.tasks]
-lint = "poetry run pre-commit run --all"
+lint = "pre-commit run --all"
 test = "task test_cov_missing"
 test_unit = "poetry run pytest tests/"
 test_cov = "task test_unit -- --cov=config_file/"
