@@ -35,11 +35,6 @@ repos:
       - id: check-yaml
       - id: check-toml
 
-    - repo: https://github.com/Lucas-C/pre-commit-hooks-markup
-      rev: v1.0.0
-      hooks:
-      - id: rst-linter
-
     - repo: https://gitlab.com/pycqa/flake8
       rev: 3.7.9
       hooks:
