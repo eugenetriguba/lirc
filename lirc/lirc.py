@@ -2,37 +2,12 @@ import socket
 import threading
 from itertools import islice
 
-
-class LircResponse:
-    """
-    A response from the LIRC daemon. Stores the command that had
-    been sent, whether or not it was successful, and the parsed
-    reply packet data.
-    """
-
-    def __init__(self, command: str, success: bool, data: list):
-        self.command = command
-        self.success = success
-        self.data = data
-
-    def __repr__(self):
-        return (
-            f"LircResponse(command={self.command}, "
-            f"success={self.success}, "
-            f"data={self.data})"
-        )
-
-
-class LircSocketError(Exception):
-    """For when a generic error occurs with the lircd socket"""
-
-
-class LircSocketTimeoutError(LircSocketError):
-    """
-    For when a timeout error occurs with the socket.
-    This can happen when recv does not find any data for
-    a given amount of time.
-    """
+from lirc.exceptions import (
+    InvalidReplyPacketFormat,
+    LircSocketError,
+    LircSocketTimeoutError,
+)
+from lirc.response import LircResponse
 
 
 class Lirc:
@@ -67,7 +42,7 @@ class Lirc:
         socket_path: str = DEFAULT_SOCKET_PATH,
         socket: socket.socket = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM),
         socket_timeout: int = 5,
-    ):
+    ) -> None:
         """
         Initialize Lirc by connecting to the lircd socket.
 
@@ -75,10 +50,10 @@ class Lirc:
         :param socket: The socket.socket used to connect to the lircd socket.
         """
         self.__lock = threading.Lock()
-        self.socket = socket
-        self.socket_timeout = socket_timeout
-        self.socket.settimeout(self.socket_timeout)
-        self.socket.connect(socket_path)
+        self.__socket = socket
+        self.__socket_timeout = socket_timeout
+        self.__socket.settimeout(self.__socket_timeout)
+        self.__socket.connect(socket_path)
 
     def __send_command(self, command: str) -> LircResponse:
         """
@@ -96,7 +71,7 @@ class Lirc:
 
         try:
             self.__lock.acquire()
-            self.socket.sendall(command.encode(self.ENCODING))
+            self.__socket.sendall(command.encode(self.ENCODING))
 
             reply_packet = self.__read_reply_packet()
             return self.__parse_reply_packet(reply_packet)
@@ -125,16 +100,16 @@ class Lirc:
         try:
             BUFFER_LENGTH = 256
             buffer = ""
-            data = self.socket.recv(BUFFER_LENGTH)
+            data = self.__socket.recv(BUFFER_LENGTH)
 
             # Ignore recieve requests that the socket caches
             while "BEGIN" not in data.decode(self.ENCODING):
-                data = self.socket.recv(BUFFER_LENGTH)
+                data = self.__socket.recv(BUFFER_LENGTH)
 
             buffer += data.decode(self.ENCODING)
 
             while not buffer.endswith("END\n"):
-                data = self.socket.recv(BUFFER_LENGTH)
+                data = self.__socket.recv(BUFFER_LENGTH)
                 buffer += data.decode(self.ENCODING)
 
             return buffer
@@ -179,7 +154,9 @@ class Lirc:
             data_length = int(lines[current_index])
             current_index += 1
         else:
-            raise ValueError(f"Unknown format for reply packet: \n{lines}")
+            raise InvalidReplyPacketFormat(
+                f"Unknown format for reply packet: \n{lines}"
+            )
 
         for line in islice(lines, current_index, current_index + data_length):
             response.data.append(line)
