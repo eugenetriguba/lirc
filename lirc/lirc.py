@@ -101,7 +101,7 @@ class Lirc:
             if err == "timed out":
                 raise LircSocketTimeoutError(
                     f"could not find any data on the socket after "
-                    f"{self.socket_timeout} seconds, socket timed out."
+                    f"{self.__socket_timeout} seconds, socket timed out."
                 )
             else:
                 raise LircSocketError(e)
