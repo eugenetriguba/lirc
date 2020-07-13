@@ -3,7 +3,7 @@ import threading
 from itertools import islice
 
 from lirc.exceptions import (
-    InvalidReplyPacketFormat,
+    InvalidReplyPacketFormatError,
     LircSocketError,
     LircSocketTimeoutError,
 )
@@ -154,7 +154,7 @@ class Lirc:
             data_length = int(lines[current_index])
             current_index += 1
         else:
-            raise InvalidReplyPacketFormat(
+            raise InvalidReplyPacketFormatError(
                 f"Unknown format for reply packet: \n{lines}"
             )
 

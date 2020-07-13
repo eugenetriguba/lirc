@@ -2,7 +2,7 @@ class LircError(Exception):
     """A generic error that comes from this package."""
 
 
-class InvalidReplyPacketFormat(LircError):
+class InvalidReplyPacketFormatError(LircError):
     """The reply packet from LIRC was in an invalid format."""
 
 

@@ -1,5 +1,5 @@
 from .exceptions import (
-    InvalidReplyPacketFormat,
+    InvalidReplyPacketFormatError,
     LircError,
     LircSocketError,
     LircSocketTimeoutError,
@@ -15,5 +15,5 @@ __all__ = [
     "LircError",
     "LircSocketError",
     "LircSocketTimeoutError",
-    "InvalidReplyPacketFormat",
+    "InvalidReplyPacketFormatError",
 ]
