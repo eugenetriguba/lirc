@@ -31,7 +31,7 @@ LIRC Python Package
 
 This is a python package that allows you to interact with the daemon in the
 `Linux Infrared Remote Control <https://lirc.org>`_ package. Interacting with
-the daemon allows you to be able to send IR signals from computer.
+the daemon allows you to send IR signals from a computer.
 
 More information on the lircd daemon, socket interface,
 reply packet format, etc. can be found at https://www.lirc.org/html/lircd.html
