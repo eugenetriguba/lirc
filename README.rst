@@ -15,7 +15,7 @@ LIRC Python Package
 .. image:: https://codecov.io/gh/eugenetriguba/lirc/graph/badge.svg
   :target: https://codecov.io/gh/eugenetriguba/lirc
   :alt: Code Coverage
-.. image:: https://img.shields.io/pypi/l/lirc.svg
+.. image:: https://img.shields.io/pypi/l/lirc
    :target: https://pypi.python.org/pypi/lirc/
    :alt: License
 
@@ -40,8 +40,8 @@ However since this is a wrapper around the LIRC daemon, it
 is expected that LIRC is installed and setup on the given
 system as well.
 
-More information on that can be found in the `installation <./installation.html>`_ portion
-of the documentation.
+More information on that can be found in the `installation <https://lirc.readthedocs.io/en/latest/installation.html>`_
+portion of the documentation.
 
 Using the Lirc Package
 ----------------------
