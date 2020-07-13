@@ -1,0 +1,2 @@
+Configuring System LIRC
+=======================

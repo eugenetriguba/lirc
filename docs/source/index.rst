@@ -8,9 +8,11 @@ Site Documentation
    :maxdepth: 2
 
    installation
+   hardware-setup
+   configuring-system-lirc
 
 .. toctree::
-   :caption: Package Usage
+   :caption: Python Package Usage
    :maxdepth: 2
 
    usage
