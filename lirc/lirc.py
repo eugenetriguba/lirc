@@ -1,6 +1,7 @@
 import socket
 import threading
 from itertools import islice
+from typing import List, Union
 
 from lirc.exceptions import (
     InvalidReplyPacketFormatError,
@@ -11,28 +12,7 @@ from lirc.response import LircResponse
 
 
 class Lirc:
-    """
-    Communicate with the lircd daemon.
-
-    More information on the lircd daemon, socket interface,
-    reply packet format, etc. can be found at https://www.lirc.org/html/lircd.html
-    That information is not all documented here because it would introduce
-    a lot of repetitiveness in the docstrings.
-
-    Example Usage:
-
-        from lirc import Lirc
-
-        lirc = Lirc()
-        response = lirc.version()
-
-        print(response.command)
-        >>> 'VERSION'
-        print(response.success)
-        >>> True
-        print(response.data)
-        >>> ['0.10.1']
-    """
+    """Communicate with the lircd daemon."""
 
     DEFAULT_SOCKET_PATH = "/var/run/lirc/lircd"
     ENCODING = "utf-8"
@@ -48,6 +28,8 @@ class Lirc:
 
         :param socket_path: The path to the lircd socket.
         :param socket: The socket.socket used to connect to the lircd socket.
+        :param socket_timeout: The amount of time to wait before timing out when
+            receiving data.
         """
         self.__lock = threading.Lock()
         self.__socket = socket
@@ -92,7 +74,8 @@ class Lirc:
             n lines of data]
             END
 
-        :return: The contents of the reply packet from BEGIN to END as a str.
+        :return: The contents of the reply packet from BEGIN to END.
+
         :raises LircSocketTimeoutError: If recv does not find any data after
             self.socket_timeout amount of seconds.
         :raises LircSocketError: If something else went wrong with the socket.
@@ -163,23 +146,25 @@ class Lirc:
 
         return response
 
-    def send_once(self, key: str, remote: str, repeat_count: int = 1) -> LircResponse:
+    def send_once(
+        self, key: str, remote: str, repeat_count: int = 1
+    ) -> Union[LircResponse, List[LircResponse]]:
         """
         Send an LIRC SEND_ONCE command.
 
         Structure of the command:
           * SEND_ONCE <remote-name> <key-name-from-remote-file> [repeat-count]
 
-        The reason the optional repeat-count parameter isn't used in this implementaiton
-        is because we want to be able to store all the responses from each command.
-
         :param key: The name of the key to send.
         :param remote: The remote to use keys from.
         :param repeat_count: The number of times to press this key.
 
-        :return: a LircResponse or a list of LircResponses if repeat_count > 1.
-        :rtype: LircResponse or list
+        :return: a response from the command or a list of those responses
+            if repeat_count > 1.
         """
+        # The reason the optional repeat-count parameter isn't used in this
+        # implementaiton is because we want to be able to store all the
+        # responses from each command.
         if repeat_count > 1:
             responses = []
 
@@ -200,6 +185,8 @@ class Lirc:
 
         :param key: The name of the key to start sending.
         :param remote: The remote to use keys from.
+
+        :return: The response of the command.
         """
         return self.__send_command(f"SEND_START {remote} {key}")
 
@@ -212,11 +199,17 @@ class Lirc:
 
         :param key: The name of the key to start sending.
         :param remote: The remote to use keys from.
+
+        :return: The response of the command.
         """
         return self.__send_command(f"SEND_STOP")
 
     def list_remotes(self) -> LircResponse:
-        """List all the remotes in LIRC"""
+        """
+        List all the remotes in LIRC
+
+        :return: The response of the command.
+        """
         return self.__send_command("LIST")
 
     def list_remote_keys(self, remote: str) -> LircResponse:
@@ -225,24 +218,33 @@ class Lirc:
 
         :param remote: The remote to list the keys of.
 
-        :return: An LircResponse containing the keys in the
-            data section.
+        :return: The response of the command.
         """
         return self.__send_command(f"LIST {remote}")
 
     def set_inputlog(self, path: str) -> LircResponse:
-        """Set the path to log all lircd received data to"""
+        """
+        Set the path to log all lircd received data to.
+
+        :return: The response of the command.
+        """
         return self.__send_command(f"SET_INPUTLOG {path}")
 
     def stop_inputlog(self) -> LircResponse:
         """
         Stop logging to the inputlog path from set_inputlog.
 
-        When calling SET_INPUTLOG without the path argument,
-        it will stop logging and close the logfile.
+        :return: The response of the command.
         """
+        # When calling SET_INPUTLOG without the path argument,
+        # it will stop logging and close the logfile.
         return self.__send_command("SET_INPUTLOG")
 
     def version(self) -> LircResponse:
-        """Retrieve the version of LIRC"""
+        """
+        Retrieve the version of LIRC
+
+        :return: The response of the command with
+            the version in the data field.
+        """
         return self.__send_command("VERSION")
