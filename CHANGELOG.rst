@@ -12,11 +12,11 @@ Unreleased
 
 **Fixed**
 
-  * An issue where if the socket times out while trying to retrieve
-    data from it, the error message would try to reference the socket_timeout
-    variable stored in the class without the dunder (__) so it would fail.
+- An issue where if the socket times out while trying to retrieve
+  data from it, the error message would try to reference the socket_timeout
+  variable stored in the class without the dunder (__) so it would fail.
 
 1.0.0 - 2020-07-12
 ------------------
 
-  * Initial Release
+- Initial Release
