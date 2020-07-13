@@ -1,5 +1,3 @@
-exclude: 'docs/source/index.rst'  # rst-linter breaks on toctree
-
 repos:
 
     - repo: https://github.com/humitos/mirrors-autoflake
