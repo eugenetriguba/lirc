@@ -15,6 +15,15 @@ LIRC Python Package
 .. image:: https://codecov.io/gh/eugenetriguba/lirc/graph/badge.svg
   :target: https://codecov.io/gh/eugenetriguba/lirc
   :alt: Code Coverage
+.. image:: https://api.codeclimate.com/v1/badges/62b96571ae84f2895531/maintainability
+   :target: https://codeclimate.com/github/eugenetriguba/lirc/maintainability
+   :alt: Maintainability
+.. image:: https://img.shields.io/badge/code%20style-black-000000.svg
+    :target: https://github.com/psf/black
+    :alt: Code Formatter
+.. image:: https://img.shields.io/badge/contributions-welcome-brightgreen.svg
+    :target: https://github.com/eugenetriguba/lirc/issues
+    :alt: Contributing
 .. image:: https://img.shields.io/pypi/l/lirc
    :target: https://pypi.python.org/pypi/lirc/
    :alt: License
