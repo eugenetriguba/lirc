@@ -62,3 +62,6 @@ virtual environment.
 
   $ poetry install
   $ poetry shell
+
+From inside the virtual environment, we can work with the package and easily run the tasks for
+this project such as ``task test`` and ``task lint`` that are in the ``pyproject.toml`` file.
