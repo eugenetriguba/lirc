@@ -7,7 +7,7 @@ from .exceptions import (
 from .lirc import Lirc
 from .response import LircResponse
 
-__version__ = "1.0.0"
+__version__ = "0.0.0"
 
 __all__ = [
     "Lirc",
