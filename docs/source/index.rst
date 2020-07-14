@@ -16,8 +16,6 @@ Site Documentation
    :maxdepth: 2
 
    usage
-   using-lirc-on-windows
-   using-lirc-on-macos
 
 .. toctree::
    :caption: Reference

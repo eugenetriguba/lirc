@@ -38,7 +38,7 @@ Windows:
     It works a bit differently since it is just a collection of files
     in a folder that you run so you'll have to adjust the ``socket``
     and ``socket_path`` parameter. More information on that can be found
-    at `Using LIRC on Windows <./using-lirc-on-windows.html>`_.
+    at `using LIRC on Windows <./using-lirc-on-windows.html>`_.
 
 macOS:
 
@@ -47,5 +47,5 @@ macOS:
     it doesn't appear to be maintained any longer and is not the latest LIRC version.
     You can then run ``port install lirc`` or build the package from source using
     the instructions on the README of the GitHub repository. See
-    `Using LIRC on macOS <./using-lirc-on-macos.html>`_ for more information on
+    `using LIRC on macOS <./using-lirc-on-macos.html>`_ for more information on
     getting LIRC setup on macOS and how to use this python package with it.
