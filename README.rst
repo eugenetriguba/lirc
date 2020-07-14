@@ -87,5 +87,8 @@ a ``LircResponse`` for us that it returns. That response contains the
 command we sent to LIRC, whether it was successful, and any data that
 was returned back to us.
 
-Further documentation and a full API specification is available at
-https://lirc.readthedocs.org
+Further Documentation
+---------------------
+
+More information on how to setup the system installed LIRC, how to use this python library,
+and a full API specification can be found at https://lirc.readthedocs.io/
