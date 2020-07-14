@@ -30,6 +30,8 @@ class Lirc:
         :param socket: The socket.socket used to connect to the lircd socket.
         :param socket_timeout: The amount of time to wait before timing out when
             receiving data.
+
+        :raises FileNotFoundError: If the socket path is not found.
         """
         self.__lock = threading.Lock()
         self.__socket = socket
