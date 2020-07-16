@@ -1,6 +1,7 @@
 import socket
 import threading
 from itertools import islice
+from platform import system
 from typing import List, Union
 
 from lirc.exceptions import (
@@ -10,34 +11,69 @@ from lirc.exceptions import (
 )
 from lirc.response import LircResponse
 
+DEFAULT_ADDRESS_LINUX = "/var/run/lirc/lircd"
+DEFAULT_ADDRESS_WINDOWS = ("localhost", 8765)
+DEFAULT_ADDRESS_DARWIN = "/opt/run/var/run/lirc/lircd"
+
 
 class Lirc:
     """Communicate with the lircd daemon."""
 
-    DEFAULT_SOCKET_PATH = "/var/run/lirc/lircd"
-    ENCODING = "utf-8"
-
     def __init__(
         self,
-        socket_path: str = DEFAULT_SOCKET_PATH,
-        socket: socket.socket = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM),
-        socket_timeout: int = 5,
+        address: Union[str, tuple] = None,
+        socket: socket.socket = None,
+        timeout: float = 5.0,
     ) -> None:
         """
         Initialize Lirc by connecting to the lircd socket.
 
-        :param socket_path: The path to the lircd socket.
-        :param socket: The socket.socket used to connect to the lircd socket.
-        :param socket_timeout: The amount of time to wait before timing out when
-            receiving data.
+        :param address: The address to lircd. The default address
+            depends on the operating system you are using. On Linux,
+            it is "/var/run/lirc/lircd". On macOS, it is
+            "/opt/run/var/run/lirc/lircd". And on Windows, it is
+            ("localhost", 8765) to connect to localhost:8765, which
+            is the default address for WinLIRC.
 
-        :raises FileNotFoundError: If the socket path is not found.
+        :param socket: The socket.socket used to connect to the lircd socket.
+
+        :param timeout: The amount of time in seconds to wait before timing out when
+            receiving data from the lirc server.
+
+        :raises FileNotFoundError: If the socket cannot connect to the address.
         """
         self.__lock = threading.Lock()
-        self.__socket = socket
-        self.__socket_timeout = socket_timeout
-        self.__socket.settimeout(self.__socket_timeout)
-        self.__socket.connect(socket_path)
+        self.__encoding = "utf-8"
+        self.__timeout = timeout
+        self.__socket = self.__determine_socket(socket)
+        self.__address = (
+            address
+            if address is not None
+            else globals()[f"DEFAULT_ADDRESS_{system().upper()}"]
+        )
+
+        self.__socket.settimeout(self.__timeout)
+        self.__socket.connect(self.__address)
+
+    @staticmethod
+    def __determine_socket(lircd_socket: Union[socket.socket, None]) -> socket.socket:
+        """
+        Determines the default socket type to be used based on the
+        operating system of the host if no socket to use is provided.
+
+        It will use a socket configured for TCP on Windows (since
+        that is how WinLIRC works), and it will default to a socket
+        configured for unix sockets otherwise (Darwin & Linux).
+
+        :param lircd_socket: The socket passed in to the Lirc constructor.
+        """
+        if isinstance(lircd_socket, socket.socket):
+            return lircd_socket
+
+        if system() == "Windows":
+            return socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        else:
+            return socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
 
     def __send_command(self, command: str) -> LircResponse:
         """
@@ -55,7 +91,7 @@ class Lirc:
 
         try:
             self.__lock.acquire()
-            self.__socket.sendall(command.encode(self.ENCODING))
+            self.__socket.sendall(command.encode(self.__encoding))
 
             reply_packet = self.__read_reply_packet()
             return self.__parse_reply_packet(reply_packet)
@@ -79,7 +115,7 @@ class Lirc:
         :return: The contents of the reply packet from BEGIN to END.
 
         :raises LircSocketTimeoutError: If recv does not find any data after
-            self.socket_timeout amount of seconds.
+            the specified timeout amount of seconds.
         :raises LircSocketError: If something else went wrong with the socket.
         """
         try:
@@ -88,14 +124,14 @@ class Lirc:
             data = self.__socket.recv(BUFFER_LENGTH)
 
             # Ignore recieve requests that the socket caches
-            while "BEGIN" not in data.decode(self.ENCODING):
+            while "BEGIN" not in data.decode(self.__encoding):
                 data = self.__socket.recv(BUFFER_LENGTH)
 
-            buffer += data.decode(self.ENCODING)
+            buffer += data.decode(self.__encoding)
 
             while not buffer.endswith("END\n"):
                 data = self.__socket.recv(BUFFER_LENGTH)
-                buffer += data.decode(self.ENCODING)
+                buffer += data.decode(self.__encoding)
 
             return buffer
         except (socket.timeout, socket.error) as e:
@@ -103,7 +139,7 @@ class Lirc:
             if err == "timed out":
                 raise LircSocketTimeoutError(
                     f"could not find any data on the socket after "
-                    f"{self.__socket_timeout} seconds, socket timed out."
+                    f"{self.__timeout} seconds, socket timed out."
                 )
             else:
                 raise LircSocketError(e)

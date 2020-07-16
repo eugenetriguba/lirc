@@ -10,24 +10,24 @@ from lirc import (
 )
 
 
+# TODO: test this per OS!
 def test_default_lirc_init(mock_socket):
     TIMEOUT = 5
-    mock_lirc = Lirc(socket=mock_socket, socket_timeout=TIMEOUT)
-
-    mock_socket.connect.assert_called_with(mock_lirc.DEFAULT_SOCKET_PATH)
+    Lirc(socket=mock_socket, timeout=TIMEOUT)
+    # mock_socket.connect.assert_called_with(mock_lirc.DEFAULT_SOCKET_PATH)
     mock_socket.settimeout.assert_called_with(TIMEOUT)
 
 
 def test_lirc_custom_path(mock_socket):
     CUSTOM_PATH = "CUSTOM"
-    Lirc(socket=mock_socket, socket_path=CUSTOM_PATH)
+    Lirc(socket=mock_socket, address=CUSTOM_PATH)
 
     mock_socket.connect.assert_called_with(CUSTOM_PATH)
 
 
 def test_custom_path_lirc_init(mock_socket):
     TEST_SOCKET_PATH = "test_path"
-    Lirc(socket=mock_socket, socket_path=TEST_SOCKET_PATH)
+    Lirc(socket=mock_socket, address=TEST_SOCKET_PATH)
     mock_socket.connect.assert_called_with(TEST_SOCKET_PATH)
 
 
@@ -38,7 +38,7 @@ def test_read_reply_packet(mock_lirc, reply_packet):
     mock_lirc._Lirc__socket.recv.return_value = reply_packet
     retrieved_packet = mock_lirc._Lirc__read_reply_packet()
     mock_lirc._Lirc__socket.recv.assert_called_with(256)
-    assert reply_packet == retrieved_packet.encode(mock_lirc.ENCODING)
+    assert reply_packet == retrieved_packet.encode(mock_lirc._Lirc__encoding)
 
 
 @pytest.mark.skipif(
@@ -108,12 +108,14 @@ def test_send_once(mock_lirc, reply_packet, repeat_count):
     REMOTE = "remote"
     KEY = "key"
     COMMAND = f"SEND_ONCE {REMOTE} {KEY}"
-    SUCCESS = True if "SUCCESS" in reply_packet.decode(mock_lirc.ENCODING) else False
+    SUCCESS = (
+        True if "SUCCESS" in reply_packet.decode(mock_lirc._Lirc__encoding) else False
+    )
 
     mock_lirc._Lirc__socket.recv.return_value = reply_packet
     response = mock_lirc.send_once(KEY, REMOTE, repeat_count=repeat_count)
     mock_lirc._Lirc__socket.sendall.assert_called_with(
-        (COMMAND + "\n").encode(mock_lirc.ENCODING)
+        (COMMAND + "\n").encode(mock_lirc._Lirc__encoding)
     )
 
     if repeat_count > 1:
