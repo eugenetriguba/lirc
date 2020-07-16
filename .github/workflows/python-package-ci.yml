@@ -2,17 +2,18 @@ name: python package ci
 
 on:
   push:
-    branches: [ master, dev ]
+    branches: [ master, dev, test-ci ]
   pull_request:
-    branches: [ master, dev ]
+    branches: [ master, dev, test-ci ]
 
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         python-version: [3.6, 3.7, 3.8]
+        os: [macos-latest, ubuntu-latest, windows-latest]
 
     steps:
     - uses: actions/checkout@v2
