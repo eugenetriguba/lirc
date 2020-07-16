@@ -13,7 +13,6 @@ jobs:
     strategy:
       matrix:
         python-version: [3.6, 3.7, 3.8]
-        os: [macos-latest, ubuntu-latest, windows-latest]
 
     steps:
     - uses: actions/checkout@v2
@@ -28,9 +27,6 @@ jobs:
         python -m pip install --upgrade pip
         pip install poetry
         poetry install -vvv
-    # - name: Run linters
-    #   run: |
-    #     poetry run task lint
     - name: Run tests
       run: |
         poetry run task test_ci
