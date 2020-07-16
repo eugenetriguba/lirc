@@ -74,7 +74,7 @@ This is for a
 `KENMORE_253-79081 <http://lirc.sourceforge.net/remotes/Kenmore/Kenmore_253_79081>`_,
 remote taken from the `LIRC remote database <http://lirc.sourceforge.net/remotes>`_.
 
-::
+.. code-block:: text
 
   # Please make this file available to others
   # by sending it to <lirc@bartelmus.de>
@@ -155,7 +155,7 @@ from ``/etc/lirc/lirc_options.conf`` on a
 Linux machine, to get a feel for the configuration
 options offered.
 
-::
+.. code-block:: text
 
   # These are the default options to lircd, if installed as
   # /etc/lirc/lirc_options.conf. See the lircd(8) and lircmd(8)
