@@ -65,30 +65,27 @@ Using the Lirc Package
 
   print(response.command)
   >>> 'VERSION'
-  print(response.success)
-  >>> True
   print(response.data)
   >>> ['0.10.1']
 
 To get started with the package, we import ``Lirc`` and can
 initialize it with the defaults by passing it no arguments.
 
-This will assume a socket path of ``/var/run/lirc/lircd``.
-Furthermore, this will also then assume a socket connection
-using ``AF_UNIX`` and ``SOCK_STREAM``. These are both the defaults
-that should work on a Linux system. There are ports of LIRC
-to Windows and macOS but using the package there is far less
-common. However, both of these are configurable through options
-passed to ``Lirc`` to allow it to be used on those operating systems
-as well.
+The defaults for ``address`` and ``socket`` are determined
+by the operating system you are using and are the defaults
+for LIRC on whatever platform you are on. However, they are
+configurable if needed. LIRC was created for Linux, but there
+are ports for macOS (through macports) and Windows (WinLIRC).
 
-After sending any command to the LIRC daemon, this package will create
-a ``LircResponse`` for us that it returns. That response contains the
-command we sent to LIRC, whether it was successful, and any data that
-was returned back to us.
+After sending any command to the LIRC daemon, this package will
+create a ``LircResponse`` for us that it returns. That response
+contains the command we sent to LIRC and any data that was
+returned back to us. If the command was not succesful, a
+``LircCommandFailureError`` exception will be thrown.
 
 Further Documentation
 ---------------------
 
-More information on how to setup the system installed LIRC, how to use this python library,
-and a full API specification can be found at https://lirc.readthedocs.io/
+More information on how to setup the system installed LIRC, how to use
+this python library, and a full API specification can be found at
+https://lirc.readthedocs.io/
