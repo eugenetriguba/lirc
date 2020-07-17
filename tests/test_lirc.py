@@ -1,4 +1,6 @@
 import os
+import socket
+from unittest import mock
 
 import pytest
 
@@ -8,27 +10,44 @@ from lirc import (
     LircResponse,
     LircSocketTimeoutError,
 )
+from lirc.lirc import (
+    DEFAULT_ADDRESS_DARWIN,
+    DEFAULT_ADDRESS_LINUX,
+    DEFAULT_ADDRESS_WINDOWS,
+)
 
 
-# TODO: test this per OS!
-def test_default_lirc_init(mock_socket):
-    TIMEOUT = 5
-    Lirc(socket=mock_socket, timeout=TIMEOUT)
-    # mock_socket.connect.assert_called_with(mock_lirc.DEFAULT_SOCKET_PATH)
-    mock_socket.settimeout.assert_called_with(TIMEOUT)
+@mock.patch("socket.socket")
+@mock.patch("platform.system")
+@pytest.mark.parametrize(
+    "os_name, expected_address, expected_socket_parameters",
+    [
+        ("Windows", DEFAULT_ADDRESS_WINDOWS, (socket.AF_INET, socket.SOCK_STREAM)),
+        ("Darwin", DEFAULT_ADDRESS_DARWIN, (socket.AF_UNIX, socket.SOCK_STREAM)),
+        ("Linux", DEFAULT_ADDRESS_LINUX, (socket.AF_UNIX, socket.SOCK_STREAM)),
+    ],
+)
+def test_default_lirc_initialization(
+    mocked_system, mocked_socket, os_name, expected_address, expected_socket_parameters
+):
+    mocked_system.return_value = os_name
+
+    lirc = Lirc()
+    lirc_socket = lirc._Lirc__socket
+
+    mocked_socket.assert_called_once_with(*expected_socket_parameters)
+    lirc_socket.connect.assert_called_with(expected_address)
+    lirc_socket.settimeout.assert_called_with(5.0)
 
 
-def test_lirc_custom_path(mock_socket):
-    CUSTOM_PATH = "CUSTOM"
-    Lirc(socket=mock_socket, address=CUSTOM_PATH)
+def test_custom_lirc_initialization(mock_socket):
+    CUSTOM_ADDRESS = "CUSTOM"
+    CUSTOM_TIMEOUT = 10.0
 
-    mock_socket.connect.assert_called_with(CUSTOM_PATH)
+    Lirc(socket=mock_socket, address=CUSTOM_ADDRESS, timeout=CUSTOM_TIMEOUT)
 
-
-def test_custom_path_lirc_init(mock_socket):
-    TEST_SOCKET_PATH = "test_path"
-    Lirc(socket=mock_socket, address=TEST_SOCKET_PATH)
-    mock_socket.connect.assert_called_with(TEST_SOCKET_PATH)
+    mock_socket.connect.assert_called_with(CUSTOM_ADDRESS)
+    mock_socket.settimeout.assert_called_with(CUSTOM_TIMEOUT)
 
 
 @pytest.mark.parametrize(

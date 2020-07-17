@@ -1,7 +1,7 @@
+import platform
 import socket
 import threading
 from itertools import islice
-from platform import system
 from typing import List, Union
 
 from lirc.exceptions import (
@@ -49,7 +49,7 @@ class Lirc:
         self.__address = (
             address
             if address is not None
-            else globals()[f"DEFAULT_ADDRESS_{system().upper()}"]
+            else globals()[f"DEFAULT_ADDRESS_{platform.system().upper()}"]
         )
 
         self.__socket.settimeout(self.__timeout)
@@ -67,10 +67,10 @@ class Lirc:
 
         :param lircd_socket: The socket passed in to the Lirc constructor.
         """
-        if isinstance(lircd_socket, socket.socket):
+        if lircd_socket:
             return lircd_socket
 
-        if system() == "Windows":
+        if platform.system() == "Windows":
             return socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         else:
             return socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
