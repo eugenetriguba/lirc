@@ -83,8 +83,7 @@ class Lirc:
         See SOCKET COMMAND INTERFACE in https://www.lirc.org/html/lircd.html
         for more information.
 
-        :return: A LircResponse containing information on the command sent,
-            whether it was successful, and any other data, if any was sent.
+        :return: a response object containing information on the command sent.
         """
         if not command.endswith("\n"):
             command += "\n"
@@ -134,15 +133,14 @@ class Lirc:
                 buffer += data.decode(self.__encoding)
 
             return buffer
-        except (socket.timeout, socket.error) as e:
-            err = e.args[0]
-            if err == "timed out":
+        except (socket.timeout, socket.error) as error:
+            if len(error.args) >= 1 and error.args[0] == "timed out":
                 raise LircSocketTimeoutError(
                     f"could not find any data on the socket after "
                     f"{self.__timeout} seconds, socket timed out."
                 )
             else:
-                raise LircSocketError(e)
+                raise LircSocketError(error)
 
     def __parse_reply_packet(self, packet: str) -> LircResponse:
         """
@@ -150,8 +148,7 @@ class Lirc:
 
         :param packet: The reply packet from lirc.
 
-        :return: An LircResponse containing the command sent,
-            whether it was successful, and any other data, if any was sent.
+        :return: a response object containing information on the command sent.
         """
         lines = packet.split("\n")
         current_index = 0
