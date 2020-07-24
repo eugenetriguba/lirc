@@ -30,8 +30,9 @@ LIRC Python Package
    :alt: License
 
 This is a python package that allows you to interact with the daemon in the
-`Linux Infrared Remote Control <https://lirc.org>`_ package. Interacting with
-the daemon allows you to send IR signals from a computer.
+`Linux Infrared Remote Control <https://lirc.org>`_ package. By interacting
+with the daemon, it allows you to programmatically send IR signals from a
+computer.
 
 More information on the lircd daemon, socket interface,
 reply packet format, etc. can be found at https://www.lirc.org/html/lircd.html
@@ -53,8 +54,11 @@ system as well.
 More information on that can be found in the `installation <https://lirc.readthedocs.io/en/latest/installation.html>`_
 portion of the documentation.
 
-Using the Lirc Package
-----------------------
+Usage Quick Start
+-----------------
+
+Running a basic command
+^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: python
 
@@ -76,12 +80,27 @@ by the operating system you are using and are the defaults
 for LIRC on whatever platform you are on. However, they are
 configurable if needed. LIRC was created for Linux, but there
 are ports for macOS (through macports) and Windows (WinLIRC).
+This package is compatible with those ports as well.
 
 After sending any command to the LIRC daemon, this package will
 create a ``LircResponse`` for us that it returns. That response
 contains the command we sent to LIRC and any data that was
 returned back to us. If the command was not succesful, a
 ``LircCommandFailureError`` exception will be thrown.
+
+Sending IR
+^^^^^^^^^^
+
+.. code-block:: python
+
+  from lirc import Lirc
+
+  lirc = Lirc()
+  response = lirc.send_once("my-remote-name-in-lircd.conf.d-folder", "KEY_POWER")
+
+
+Handling Errors
+^^^^^^^^^^^^^^^
 
 Further Documentation
 ---------------------
