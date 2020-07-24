@@ -1,11 +1,12 @@
-from .exceptions import (
+from lirc.exceptions import (
     InvalidReplyPacketFormatError,
+    LircCommandFailureError,
     LircError,
     LircSocketError,
     LircSocketTimeoutError,
 )
-from .lirc import Lirc
-from .response import LircResponse
+from lirc.lirc import Lirc
+from lirc.lirc_response import LircResponse
 
 __version__ = "0.1.0"
 
@@ -16,4 +17,5 @@ __all__ = [
     "LircSocketError",
     "LircSocketTimeoutError",
     "InvalidReplyPacketFormatError",
+    "LircCommandFailureError",
 ]
