@@ -6,10 +6,11 @@ from typing import List, Union
 
 from lirc.exceptions import (
     InvalidReplyPacketFormatError,
+    LircCommandFailureError,
     LircSocketError,
     LircSocketTimeoutError,
 )
-from lirc.response import LircResponse
+from lirc.lirc_response import LircResponse
 
 DEFAULT_ADDRESS_LINUX = "/var/run/lirc/lircd"
 DEFAULT_ADDRESS_WINDOWS = ("localhost", 8765)
@@ -149,10 +150,13 @@ class Lirc:
         :param packet: The reply packet from lirc.
 
         :return: a response object containing information on the command sent.
+        :raises LircCommandFailureError: If the command we send to LIRC fails.
+            The data from the response of the command, likey the error message,
+            is used as the message.
         """
         lines = packet.split("\n")
         current_index = 0
-        response = LircResponse("", False, [])
+        response = LircResponse("", [])
 
         if lines[current_index] == "BEGIN":
             current_index += 1
@@ -162,7 +166,7 @@ class Lirc:
         response.command = lines[current_index]
         current_index += 1
 
-        response.success = True if lines[current_index] == "SUCCESS" else False
+        command_success = True if lines[current_index] == "SUCCESS" else False
         current_index += 1
 
         if lines[current_index] == "END":
@@ -178,6 +182,9 @@ class Lirc:
 
         for line in islice(lines, current_index, current_index + data_length):
             response.data.append(line)
+
+        if not command_success:
+            raise LircCommandFailureError(response.data)
 
         return response
 
