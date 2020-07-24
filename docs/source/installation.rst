@@ -19,9 +19,12 @@ through pip.
 System LIRC Package
 -------------------
 
-While there are ports of LIRC to macOS and Windows,
-the original Linux version is generally easier to
-get working and install.
+While LIRC was originally created for Linux, there
+are ports of LIRC to macOS and Windows which this
+python package is compatibile with. However, I would
+still recommend using the original Linux version if
+you can, as it generally has better maintanence,
+hardware support, etc.
 
 Linux:
 
