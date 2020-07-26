@@ -2,9 +2,13 @@ name: python package ci
 
 on:
   push:
-    branches: [ master, dev, test-ci ]
+    paths:
+      - "lirc/**"
+      - "tests/**"
   pull_request:
-    branches: [ master, dev, test-ci ]
+    paths:
+      - "lirc/**"
+      - "tests/**"
 
 jobs:
   build:
@@ -44,3 +48,6 @@ jobs:
     - name: Build Package
       run: |
         poetry build
+
+    - name: Security Checks
+      uses: tonybaloney/pycharm-security@master
