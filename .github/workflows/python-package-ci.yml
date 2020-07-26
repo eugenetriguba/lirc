@@ -33,8 +33,7 @@ jobs:
         pip install poetry codecov pytest pytest-cov taskipy
         poetry install -v --no-dev
     - name: Run tests
-      run: |
-        poetry run task test_ci
+      run: poetry run task test_ci
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v1
@@ -46,8 +45,7 @@ jobs:
         fail_ci_if_error: true
 
     - name: Build Package
-      run: |
-        poetry build
+      run: poetry build
 
     - name: Security Checks
       uses: tonybaloney/pycharm-security@master
