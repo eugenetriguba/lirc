@@ -91,11 +91,11 @@ However, we can customize these defaults if desired.
   )
 
 The address specifies how to reach the lircd daemon. On Windows, we pass
-a (hostname, port) tuple since we connect over TCP. However on Linux and
-macOS, we pass in the socket path. For the client in the example above, we
-set it up using the defaults for a Linux machine. While it illustrates what
-is customizable, it is not a practical example since you could just call
-``Client()`` then if you're on Linux and achieve the same outcome.
+a ``(hostname, port)`` tuple since we connect over TCP. However on Linux and
+macOS, we pass in the socket path as a string. For the client in the example
+above, we set it up using the defaults for a Linux machine. While it illustrates
+what is customizable, it is not a practical example since you could just call
+``Client()`` if you're on Linux and achieve the same outcome.
 
 Sending IR
 ^^^^^^^^^^
