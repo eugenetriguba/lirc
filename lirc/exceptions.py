@@ -7,15 +7,11 @@ class LircError(Exception):
     """
 
 
-class InvalidReplyPacketFormatError(LircError):
-    """The reply packet from LIRC was in an invalid format."""
-
-
-class LircSocketError(LircError):
+class LircdSocketError(LircError):
     """For when a generic error occurs with the lircd socket"""
 
 
-class LircSocketTimeoutError(LircSocketError):
+class LircdSocketTimeoutError(LircdSocketError):
     """
     For when a timeout error occurs with the socket.
     This can happen when recv does not find any data for
@@ -23,7 +19,15 @@ class LircSocketTimeoutError(LircSocketError):
     """
 
 
-class LircCommandFailureError(LircError):
+class LircdConnectionError(LircError):
+    """For when we are unable to connect to lircd."""
+
+
+class LircdInvalidReplyPacketError(LircError):
+    """The reply packet from lircd was in an invalid format."""
+
+
+class LircdCommandFailureError(LircError):
     """
     For when we send a command to the LIRC server
     and that command fails to send, for whatever reason.
