@@ -57,50 +57,80 @@ portion of the documentation.
 Usage Quick Start
 -----------------
 
-Running a basic command
-^^^^^^^^^^^^^^^^^^^^^^^
+Customizing the Client
+^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: python
 
-  from lirc import Lirc
+  import lirc
 
-  lirc = Lirc()
-  response = lirc.version()
+  client = lirc.Client()
 
-  print(response.command)
-  >>> 'VERSION'
-  print(response.data)
-  >>> ['0.10.1']
+  print(client.version())
+  >>> '0.10.1'
 
-To get started with the package, we import ``Lirc`` and can
-initialize it with the defaults by passing it no arguments.
+To use this package, we instantiate a ``Client``. When we initialize
+the ``Client`` in the example above, we use the defaults by passing
+it no arguments.
 
-The defaults for ``address`` and ``socket`` are determined
-by the operating system you are using and are the defaults
-for LIRC on whatever platform you are on. However, they are
-configurable if needed. LIRC was created for Linux, but there
-are ports for macOS (through macports) and Windows (WinLIRC).
-This package is compatible with those ports as well.
+The defaults use the ``LircdConnection`` class. These defaults depend
+on your operating system and can be looked up in the full documentation.
+However, we can customize these defaults if desired.
 
-After sending any command to the LIRC daemon, this package will
-create a ``LircResponse`` for us that it returns. That response
-contains the command we sent to LIRC and any data that was
-returned back to us. If the command was not succesful, a
-``LircCommandFailureError`` exception will be thrown.
+.. code-block:: python
+
+  import socket
+  import lirc
+
+  client = lirc.Client(
+    connection=lirc.LircdConnection(
+      address="/var/run/lirc/lircd",
+      socket=socket.socket(socket.AF_UNIX, socket.SOCK_STREAM),
+      timeout = 5.0
+    )
+  )
+
+The address specifies how to reach the lircd daemon. On Windows, we pass
+a (hostname, port) tuple since we connect over TCP. However on Linux and
+macOS, we pass in the socket path. For the client in the example above, we
+set it up using the defaults for a Linux machine. While it illustrates what
+is customizable, it is not a practical example since you could just call
+``Client()`` then if you're on Linux and achieve the same outcome.
 
 Sending IR
 ^^^^^^^^^^
 
 .. code-block:: python
 
-  from lirc import Lirc
+  import lirc
 
-  lirc = Lirc()
-  response = lirc.send_once("my-remote-name-in-lircd.conf.d-folder", "KEY_POWER")
+  client = lirc.Client()
+  client.send("my-remote-name", "KEY_POWER")
+  client.send("my-remote-name", "KEY_3", repeat_count=2)
 
+
+With sending IR, we can use the `send` method and optionally,
+send multiple by using the `repeat_count` keyword argument.
 
 Handling Errors
 ^^^^^^^^^^^^^^^
+
+.. code-block:: python
+
+  import lirc
+
+  client = lirc.Client()
+
+  try:
+      client.send('some-remote', 'key_power')
+  except lirc.LircdCommandFailureError as error:
+      print('The command we sent failed! Check the error message')
+      print(error)
+
+If the command was not successful, a ``LircdCommandFailureError`` exception will be thrown.
+There are other errors that may be raised, which can be looked up in the full documentation,
+but this is the most likely when sending commands.
+
 
 Further Documentation
 ---------------------
