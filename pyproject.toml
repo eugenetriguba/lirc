@@ -20,6 +20,11 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 
+packages = [
+    { include = "lirc" },
+    { include = "tests", format = "sdist" }
+]
+
 [tool.taskipy.tasks]
 lint = "poetry run pre-commit run --all"
 test = "task test_cov_missing"
@@ -27,7 +32,6 @@ test_unit = "poetry run pytest tests/"
 test_cov = "task test_unit -- --cov=lirc/"
 test_cov_missing = "task test_cov -- -v --cov-report term-missing"
 test_ci = "task test_cov -- --cov-report=xml"
-test_all = "export LIRC_RUN_LONG_TESTS=true && poetry run task test && unset LIRC_RUN_LONG_TESTS"
 
 [tool.poetry.dependencies]
 python = "^3.6"
