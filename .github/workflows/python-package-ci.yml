@@ -46,6 +46,3 @@ jobs:
 
     - name: Build Package
       run: poetry build
-
-    - name: Security Checks
-      uses: tonybaloney/pycharm-security@master
