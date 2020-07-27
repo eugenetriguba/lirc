@@ -17,13 +17,16 @@ class Client:
             depending on the operating system if one is not provided.
 
         Raises:
-             LircConnectionError: If the socket cannot connect to the address.
+             LircdConnectionError: If the socket cannot connect to the address.
         """
         # Used for start_repeat and stop_repeat
         self.__last_send_start_remote = None
         self.__last_send_start_key = None
 
-        self.__connection = LircdConnection() if connection is None else connection()
+        if not isinstance(connection, LircdConnection):
+            raise ValueError("`connection` must be an instance of `LircdConnection`")
+
+        self.__connection = LircdConnection if connection is None else connection
 
     def __send_command(self, command: str) -> Union[str, List[str]]:
         """
@@ -54,7 +57,7 @@ class Client:
     def close(self):
         self.__connection.close()
 
-    def send(self, key: str, remote: str, repeat_count: int = 1) -> None:
+    def send(self, remote: str, key: str, repeat_count: int = 1) -> None:
         """
         Send an lircd SEND_ONCE command.
 
@@ -64,7 +67,7 @@ class Client:
             repeat_count: The number of times to press this key.
 
         Raises:
-            LircCommandFailure
+            LircdCommandFailure: If the command fails.
         """
         self.__send_command(f"SEND_ONCE {remote} {key} {repeat_count}")
 
@@ -82,6 +85,8 @@ class Client:
         Returns:
             The response of the command.
         """
+        self.__last_send_start_remote = remote
+        self.__last_send_start_key = key
         self.__send_command(f"SEND_START {remote} {key}")
 
     def stop_repeat(self, remote: str = None, key: str = None) -> None:
@@ -114,7 +119,7 @@ class Client:
         else:
             key_to_stop = ""
 
-        self.__send_command("SEND_STOP " f"{remote_to_stop} {key_to_stop}")
+        self.__send_command(f"SEND_STOP {remote_to_stop} {key_to_stop}")
 
     def list_remotes(self) -> List[str]:
         """
@@ -175,9 +180,13 @@ class Client:
         """
         self.__send_command(f"DRV_OPTION {key} {value}")
 
-    def simulate_keypress(
+    def simulate(
         self, remote: str, key: str, repeat_count: int = 1, keycode: int = 0
     ) -> None:
+        """
+        The --allow-simulate command line option must be active for this
+        command not to fail.
+        """
         self.__send_command(
             "SIMULATE %016d %02d %s %s\n" % (keycode, repeat_count, key, remote)
         )
@@ -186,6 +195,7 @@ class Client:
         mask = transmitters
 
         if isinstance(transmitters, List):
+            mask = 0
             for transmitter in transmitters:
                 mask |= 1 << (int(transmitter) - 1)
 
