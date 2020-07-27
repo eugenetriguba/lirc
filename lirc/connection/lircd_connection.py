@@ -3,7 +3,7 @@ import socket as system_socket
 from collections import deque
 from typing import Union
 
-from ..exceptions import LircdConnectionError, LircdSocketError, LircdSocketTimeoutError
+from ..exceptions import LircdConnectionError, LircdSocketError
 from .abstract_connection import AbstractConnection
 
 
@@ -93,7 +93,7 @@ class LircdConnection(AbstractConnection):
 
             return self.__buffer.popleft()
         except system_socket.timeout:
-            raise LircdSocketTimeoutError(
+            raise TimeoutError(
                 "could not find any data on the socket after "
                 f"{self.__socket.gettimeout()} seconds, socket timed out."
             )

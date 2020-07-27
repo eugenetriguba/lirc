@@ -11,14 +11,6 @@ class LircdSocketError(LircError):
     """For when a generic error occurs with the lircd socket"""
 
 
-class LircdSocketTimeoutError(LircdSocketError):
-    """
-    For when a timeout error occurs with the socket.
-    This can happen when recv does not find any data for
-    a given amount of time.
-    """
-
-
 class LircdConnectionError(LircError):
     """For when we are unable to connect to lircd."""
 
