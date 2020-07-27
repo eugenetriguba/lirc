@@ -1,0 +1,4 @@
+[run]
+branch = True
+source = lirc/
+omit = lirc/connection/abstract_connection.py
