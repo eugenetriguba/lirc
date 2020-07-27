@@ -12,5 +12,10 @@ def mock_socket():
 
 
 @pytest.fixture
-def mock_lirc(mock_socket):
-    return Client(connection=LircdConnection(socket=mock_socket))
+def mock_connection(mock_socket):
+    return LircdConnection(socket=mock_socket)
+
+
+@pytest.fixture
+def mock_client(mock_connection):
+    return Client(connection=mock_connection)
