@@ -7,7 +7,7 @@ from unittest import mock
 import pytest
 
 from lirc import LircdConnection
-from lirc.exceptions import LircdConnectionError, LircdSocketTimeoutError
+from lirc.exceptions import LircdConnectionError
 
 
 @mock.patch("socket.socket")
@@ -122,7 +122,7 @@ def test_that_readline_raises_timeout_error_if_no_data_from_socket():
     connection = LircdConnection(timeout=timeout)
 
     start_time = time.time()
-    with pytest.raises(LircdSocketTimeoutError) as error:
+    with pytest.raises(TimeoutError) as error:
         connection.readline()
     end_time = time.time()
     delta = abs(start_time - end_time)
