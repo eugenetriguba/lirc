@@ -1,69 +1,68 @@
-# from unittest import mock
-#
-# import pytest
-#
-# from lirc import Client
-# from lirc.connection.default_address import DefaultAddress
-# from lirc.connection.default_socket import DefaultSocket
+import pytest
+
+from lirc import Client, LircdConnection
 
 
-# @mock.patch("socket.socket")
-# @mock.patch("platform.system")
-# @pytest.mark.parametrize("os_name", ["WINDOWS", "DARWIN", "LINUX"])
-# def test_default_lirc_initialization(mocked_system, mocked_socket, os_name):
-#     mocked_system.return_value = os_name
-#     expected_socket = DefaultSocket[os_name].value
-#     expected_address = DefaultAddress[os_name].value
-#
-#     Client()
-#     # lirc_socket = lirc.socket
-#
-#     assert mocked_socket.family == expected_socket.family
-#     assert mocked_socket.type == expected_socket.type
-#     mocked_socket.connect.assert_called_with(expected_address)
-#     mocked_socket.settimeout.assert_called_with(5.0)
-#
-#
-# def test_custom_lirc_initialization(mock_socket):
-#     CUSTOM_ADDRESS = "CUSTOM"
-#     CUSTOM_TIMEOUT = 10.0
-#
-#     Client(socket=mock_socket, address=CUSTOM_ADDRESS, timeout=CUSTOM_TIMEOUT)
-#
-#     mock_socket.connect.assert_called_with(CUSTOM_ADDRESS)
-#     mock_socket.settimeout.assert_called_with(CUSTOM_TIMEOUT)
+def test_that_custom_connections_can_be_used(mock_socket):
+    connection = LircdConnection(socket=mock_socket)
+    client = Client(connection=connection)
+
+    assert client._Client__connection == connection
 
 
-# @pytest.mark.parametrize(
-#     "reply_packet, repeat_count",
-#     [
-#         (b"BEGIN\nSEND_ONCE remote key\nSUCCESS\nEND\n", 1),
-#         # (b"BEGIN\nSEND_ONCE remote key\nERROR\nEND\n", 1),
-#         # (b"BEGIN\nSEND_ONCE remote key\nSUCCESS\nEND\n", 5),
-#     ],
-# )
-# def test_send_once(mock_lirc, reply_packet, repeat_count):
-#     REMOTE = "remote"
-#     KEY = "key"
-#     COMMAND = f"SEND_ONCE {REMOTE} {KEY}"
-#     mock_lirc.socket.recv.return_value = reply_packet
-#
-#     response = mock_lirc.send(KEY, REMOTE, repeat_count=repeat_count)
-#
-#     mock_lirc.socket.sendall.assert_called_with((COMMAND + "\n").encode(ENCODING))
-#
-#
-#     if repeat_count > 1:
-#         assert type(response) == list
-#         assert len(response) == repeat_count
-#
-#         for r in response:
-#             _ensure_lirc_response(r, COMMAND)
-#     else:
-#         _ensure_lirc_response(response, COMMAND)
-#
-#
-# def _ensure_lirc_response(response: LircResponse, command: str, data: list = []):
-#     assert type(response) == LircResponse
-#     assert response.command == command
-#     assert response.data == data
+def test_that_custom_connection_that_is_not_a_lircd_connection_raises_error():
+    with pytest.raises(ValueError) as error:
+        Client(connection=Client())
+
+    assert "must be an instance of `LircdConnection`" in str(error)
+
+
+def test_that_close_closes_the_socket(mock_client_and_connection):
+    client, connection = mock_client_and_connection
+
+    client.close()
+
+    connection.socket.close.assert_called()
+
+
+@pytest.mark.parametrize(
+    "client_command, args, lircd_command",
+    [
+        ("send", {"remote": "REMOTE", "key": "KEY"}, "SEND_ONCE REMOTE KEY 1"),
+        (
+            "send",
+            {"remote": "REMOTE", "key": "KEY", "repeat_count": 5},
+            "SEND_ONCE REMOTE KEY 5",
+        ),
+        ("start_repeat", {"remote": "REMOTE", "key": "KEY"}, "SEND_START REMOTE KEY"),
+        ("stop_repeat", {}, "SEND_STOP  "),
+        ("stop_repeat", {"remote": "REMOTE", "key": "KEY"}, "SEND_STOP REMOTE KEY"),
+        ("list_remotes", {}, "LIST"),
+        ("list_remote_keys", {"remote": "REMOTE"}, "LIST REMOTE"),
+        ("start_logging", {"path": "PATH"}, "SET_INPUTLOG PATH"),
+        ("stop_logging", {}, "SET_INPUTLOG"),
+        ("version", {}, "VERSION"),
+        ("driver_option", {"key": "KEY", "value": "VALUE"}, "DRV_OPTION KEY VALUE"),
+        (
+            "simulate",
+            {"remote": "REMOTE", "key": "KEY"},
+            "SIMULATE 0000000000000000 01 KEY REMOTE",
+        ),
+        (
+            "simulate",
+            {"remote": "REMOTE", "key": "KEY", "repeat_count": 4, "keycode": 53},
+            "SIMULATE 0000000000000053 04 KEY REMOTE",
+        ),
+        ("set_transmitters", {"transmitters": 5}, "SET_TRANSMITTERS 5"),
+        ("set_transmitters", {"transmitters": [10, 1, 1]}, "SET_TRANSMITTERS 513"),
+    ],
+)
+def test_that_client_commands_send_the_correct_command(
+    mock_client_and_connection, client_command, args, lircd_command
+):
+    client, connection = mock_client_and_connection
+    connection.socket.recv.return_value = b"BEGIN\nCOMMAND\nSUCCESS\nEND\n"
+
+    getattr(client, client_command)(**args)
+
+    connection.socket.sendall.assert_called_with((lircd_command + "\n").encode("utf-8"))
