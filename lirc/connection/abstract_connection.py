@@ -5,6 +5,10 @@ from typing import Union
 
 class AbstractConnection(ABC):
     @abstractmethod
+    def connect(self) -> None:
+        pass
+
+    @abstractmethod
     def readline(self) -> str:
         pass
 

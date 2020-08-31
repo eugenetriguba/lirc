@@ -8,7 +8,7 @@ from .reply_packet_parser import ReplyPacketParser
 class Client:
     """Communicate with the lircd daemon."""
 
-    def __init__(self, connection: LircdConnection = None) -> None:
+    def __init__(self, connection: LircdConnection = LircdConnection()) -> None:
         """
         Initialize the client by connecting to the lircd socket.
 
@@ -17,7 +17,8 @@ class Client:
             depending on the operating system if one is not provided.
 
         Raises:
-             LircdConnectionError: If the socket cannot connect to the address.
+            ValueError: If connection is not a LircdConnection.
+            LircdConnectionError: If the socket cannot connect to the address.
         """
         # Used for start_repeat and stop_repeat
         self.__last_send_start_remote = None
@@ -26,7 +27,8 @@ class Client:
         if not isinstance(connection, LircdConnection):
             raise ValueError("`connection` must be an instance of `LircdConnection`")
 
-        self.__connection = LircdConnection if connection is None else connection
+        self.__connection = connection
+        self.__connection.connect()
 
     def __send_command(self, command: str) -> Union[str, List[str]]:
         """
