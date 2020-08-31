@@ -35,7 +35,6 @@ test_ci = "task test_cov -- --cov-report=xml"
 
 [tool.poetry.dependencies]
 python = "^3.6"
-transitions = "^0.8.2"
 
 [tool.poetry.dev-dependencies]
 pre-commit = { version = "^2.6.0", python = "^3.6.1" }
