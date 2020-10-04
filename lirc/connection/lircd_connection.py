@@ -14,6 +14,32 @@ class LircdConnection(AbstractConnection):
         socket: stdlib_socket.socket = DefaultConnection().socket,
         timeout: float = 5.0,
     ):
+        """
+        Initialize the LircdConnection. This sets up state we'll
+        need, but it does not connect to that socket. To connect,
+        we can call connect() after initialization.
+
+        Args:
+            address: The address to the socket. Defaults to different
+            values depending on the host operating system.
+
+                Linux: "/var/run/lirc/lircd"
+                Windows: ("localhost", 8765)
+                Darwin: "/opt/run/var/run/lirc/lircd"
+
+            socket: The socket to use to connect to lircd. The default
+            socket is determined using the host operating system.
+
+                For Linux and Darwin, a unix domain socket connection is
+                used i.e. socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+
+                However on Windows, a TCP socket is used. i.e. socket.socket(
+                    socket.AF_INET, socket.SOCK_STREAM
+                )
+
+            timeout: The amount of time to wait for data from the socket before
+            we timeout.
+        """
         self.__buffer = deque()
         self.__buffer_size = 4096
         self.__address = address
@@ -21,6 +47,13 @@ class LircdConnection(AbstractConnection):
         self.__socket.settimeout(timeout)
 
     def connect(self):
+        """
+        Connect to the socket at the address both specified on init.
+
+        Raises:
+            LircdConnectionError: If the address is invalid or lircd
+            is not running.
+        """
         try:
             self.__socket.connect(self.__address)
         except FileNotFoundError:
@@ -40,9 +73,18 @@ class LircdConnection(AbstractConnection):
         return self.__address
 
     def close(self):
+        """
+        Closes the socket connection.
+        """
         self.__socket.close()
 
     def send(self, data: str):
+        """
+        Send a commend to the lircd socket connection.
+
+        Raises:
+            TypeError: if data is not a string.
+        """
         if not isinstance(data, str):
             raise TypeError("data parameter to send() must be a string")
 
@@ -52,6 +94,27 @@ class LircdConnection(AbstractConnection):
         self.__socket.sendall(data.encode("utf-8"))
 
     def readline(self) -> str:
+        """
+        Read a line of data from the lircd socket.
+
+        We read 4096 bytes at a time as the buffer size.
+        Therefore after data is read from the socket, all
+        the lines are stored in a buffer if there is more than
+        1 and subsequent calls grab a line that stored in that
+        buffer until it is empty. Then, another call to the
+        socket would be made.
+
+        Raises:
+            TimeoutError: If we are not able to grab data from
+            the socket in a specified amount of time (the initial
+            timeout time on initialization).
+
+            LircdSocketError: If some other error happened when
+            trying to read from the socket.
+
+        Returns:
+            A line from the lircd socket.
+        """
         if len(self.__buffer) >= 1:
             return self.__buffer.popleft()
 
