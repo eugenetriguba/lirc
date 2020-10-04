@@ -9,16 +9,15 @@ class DefaultConnection:
 
     @property
     def socket(self) -> stdlib_socket.socket:
-        unix_socket = stdlib_socket.socket(
-            stdlib_socket.AF_UNIX, stdlib_socket.SOCK_STREAM
-        )
-        tcp_socket = stdlib_socket.socket(
-            stdlib_socket.AF_INET, stdlib_socket.SOCK_STREAM
-        )
-
-        return {"Linux": unix_socket, "Darwin": unix_socket, "Windows": tcp_socket}[
-            self.__operating_system
-        ]
+        if self.__operating_system == "Linux" or self.__operating_system == "Darwin":
+            return stdlib_socket.socket(
+                stdlib_socket.AF_UNIX, stdlib_socket.SOCK_STREAM
+            )
+        
+        if self.__operating_system == "Windows":
+            return stdlib_socket.socket(
+                stdlib_socket.AF_INET, stdlib_socket.SOCK_STREAM
+            )
 
     @property
     def address(self) -> Union[str, Tuple[str, int]]:
