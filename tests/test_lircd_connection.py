@@ -1,4 +1,3 @@
-import socket
 import time
 from collections import deque
 from platform import system
@@ -16,18 +15,19 @@ from lirc.exceptions import LircdConnectionError
 def test_socket_and_address_have_correct_cross_platform_values(
     mocked_system, mocked_socket, os_name
 ):
+    if system() != os_name:
+        return
+
     mocked_system.return_value = os_name
 
     connection = LircdConnection()
 
-    expected_socket = connection._LircdConnection__default_socket[os_name]
-    expected_address = connection._LircdConnection__default_address[os_name]
+    expected_socket = connection._LircdConnection__socket
+    expected_address = connection._LircdConnection__address
 
     assert connection.socket.family == expected_socket.family
     assert connection.socket.type == expected_socket.type
     assert connection.address == expected_address
-    connection.socket.connect.assert_called_with(expected_address)
-    connection.socket.settimeout.assert_called_with(5.0)
 
 
 def test_close_closes_the_socket_connection(mock_connection):
@@ -35,20 +35,14 @@ def test_close_closes_the_socket_connection(mock_connection):
     mock_connection.socket.close.assert_called()
 
 
-@pytest.mark.parametrize(
-    "invalid_parameters, error_text",
-    [
-        ({"address": "some invalid thing"}, "Could not connect to lircd"),
-        ({"socket": socket.socket()}, "AF_INET address must be tuple"),
-    ],
-)
-def test_that_connection_error_is_raised_on_invalid_connection(
-    invalid_parameters, error_text
-):
-    with pytest.raises(LircdConnectionError) as error:
-        LircdConnection(**invalid_parameters)
+def test_that_connection_error_is_raised_on_invalid_address():
+    with pytest.raises(LircdConnectionError):
+        LircdConnection(address="invalid thing").connect()
 
-    assert error_text in str(error)
+
+def test_that_attribute_error_is_raised_on_invalid_socket():
+    with pytest.raises(AttributeError):
+        LircdConnection(socket=5).connect()
 
 
 @pytest.mark.parametrize("test_command", ["SEND_ONCE REMOTE KEY", ""])
