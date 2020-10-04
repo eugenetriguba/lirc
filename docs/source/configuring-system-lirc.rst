@@ -50,7 +50,7 @@ the device should just work on the default driver.
 Windows
 -------
 
-You'll want to make sure you install WinLIRC at WinLIRC at http://winlirc.sourceforge.net/.
+You'll want to make sure you install WinLIRC at http://winlirc.sourceforge.net/.
 This is the LIRC port for Windows which corresponds with version 0.9.0 of LIRC. Past that,
 you can run the WinLIRC executable file and select the "Input Plugin" for your device. Then,
 you can select the remote configuration and click OK. You should now be able to select your remote
