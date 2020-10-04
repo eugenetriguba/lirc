@@ -23,19 +23,19 @@ class LircdConnection(AbstractConnection):
             address: The address to the socket. Defaults to different
             values depending on the host operating system.
 
-                Linux: "/var/run/lirc/lircd"
-                Windows: ("localhost", 8765)
-                Darwin: "/opt/run/var/run/lirc/lircd"
+            Linux: "/var/run/lirc/lircd"
+            Windows: ("localhost", 8765)
+            Darwin: "/opt/run/var/run/lirc/lircd"
 
             socket: The socket to use to connect to lircd. The default
             socket is determined using the host operating system.
 
-                For Linux and Darwin, a unix domain socket connection is
-                used i.e. socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+            For Linux and Darwin, a unix domain socket connection is
+            used i.e. socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
 
-                However on Windows, a TCP socket is used. i.e. socket.socket(
-                    socket.AF_INET, socket.SOCK_STREAM
-                )
+            However on Windows, a TCP socket is used. i.e. socket.socket(
+                socket.AF_INET, socket.SOCK_STREAM
+            )
 
             timeout: The amount of time to wait for data from the socket before
             we timeout.
