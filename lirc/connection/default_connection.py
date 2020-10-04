@@ -13,7 +13,7 @@ class DefaultConnection:
             return stdlib_socket.socket(
                 stdlib_socket.AF_UNIX, stdlib_socket.SOCK_STREAM
             )
-        
+
         if self.__operating_system == "Windows":
             return stdlib_socket.socket(
                 stdlib_socket.AF_INET, stdlib_socket.SOCK_STREAM
