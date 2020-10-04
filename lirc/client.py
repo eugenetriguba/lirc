@@ -57,6 +57,9 @@ class Client:
         return parser_data
 
     def close(self):
+        """
+        Close the connection to the socket.
+        """
         self.__connection.close()
 
     def send(self, remote: str, key: str, repeat_count: int = 1) -> None:
@@ -78,7 +81,7 @@ class Client:
         Send an lircd SEND_START command.
 
         This will repeat the given key until
-        stop_repeat is called.
+        stop_repeat() is called.
 
         Args:
             remote: The remote to use keys from.
@@ -91,7 +94,7 @@ class Client:
         self.__last_send_start_key = key
         self.__send_command(f"SEND_START {remote} {key}")
 
-    def stop_repeat(self, remote: str = None, key: str = None) -> None:
+    def stop_repeat(self, remote: str = "", key: str = "") -> None:
         """
         Send an lircd SEND_STOP command.
 
@@ -107,19 +110,15 @@ class Client:
         Raises:
             LircdCommandFailure: If the command fails.
         """
-        if remote:
+        if remote != "":
             remote_to_stop = remote
         elif self.__last_send_start_remote:
             remote_to_stop = self.__last_send_start_remote
-        else:
-            remote_to_stop = ""
 
-        if key:
+        if key != "":
             key_to_stop = key
         elif self.__last_send_start_key:
             key_to_stop = self.__last_send_start_key
-        else:
-            key_to_stop = ""
 
         self.__send_command(f"SEND_STOP {remote_to_stop} {key_to_stop}")
 
@@ -197,7 +196,7 @@ class Client:
         self, remote: str, key: str, repeat_count: int = 1, keycode: int = 0
     ) -> None:
         """
-        The --allow-simulate command line option must be active for this
+        The --allow-simulate command line option to `lircd` must be active for this
         command not to fail.
 
         Raises:
