@@ -31,10 +31,9 @@ jobs:
           pip install poetry
           poetry install -v
 
-      - name: Install and run LIRC
+      - name: Install system LIRC
         run: |
           sudo apt-get install lirc
-          sudo lircd
 
       - name: Run tests
         run: poetry run task test_ci
