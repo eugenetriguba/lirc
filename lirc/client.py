@@ -110,17 +110,13 @@ class Client:
         Raises:
             LircdCommandFailure: If the command fails.
         """
-        if remote != "":
-            remote_to_stop = remote
-        elif self.__last_send_start_remote:
-            remote_to_stop = self.__last_send_start_remote
+        if self.__last_send_start_remote:
+            remote = self.__last_send_start_remote
 
-        if key != "":
-            key_to_stop = key
-        elif self.__last_send_start_key:
-            key_to_stop = self.__last_send_start_key
+        if self.__last_send_start_key:
+            key = self.__last_send_start_key
 
-        self.__send_command(f"SEND_STOP {remote_to_stop} {key_to_stop}")
+        self.__send_command(f"SEND_STOP {remote} {key}")
 
     def list_remotes(self) -> List[str]:
         """
