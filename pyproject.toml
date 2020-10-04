@@ -50,6 +50,7 @@ black = "^20.8b1"
 sphinx = "^3.1.2"
 sphinx_rtd_theme = "^0.5.0"
 codecov = "^2.1.7"
+sphinxcontrib-napoleon = "^0.7"
 
 [tool.black]
 target_version = ['py38']
