@@ -17,7 +17,7 @@ Initializing Lirc
 
 The ``Client`` class takes in one optional keyword argument: connection.
 This connection must be a ``LircdConnection``. This connection, if not
-specified manuall, will have default values that depend on the operating
+specified manually, will have default values that depend on the operating
 system you are on. So the simplest way to construct ``Client`` is with no
 arguments at all.
 
@@ -65,9 +65,9 @@ on macOS will be prefixed by ``/opt/local/`` so the connection to the lircd
 socket will instead be at ``/opt/local/var/run/lirc/lircd``. The socket that
 is created will be the same.
 
-However if we are on Windows, we can't use unix domain sockets. So instead,
+However if we are on Windows, we can't use unix domain sockets. Instead,
 WinLIRC uses TCP to communicate with the lirc daemon. So instead of a string
-for the address, it defaults to a tuple of ("localhost", 8765), the default on
-WinLIRC. The first part contains the address whereas the second is the port.
-Furthermore, the socket that is created uses ``AF_INET`` and ``SOCK_STREAM``
-instead so we can connect over TCP.
+for the address, it defaults to a tuple of ("localhost", 8765), which is the
+default on WinLIRC. The first part contains the address whereas the second is
+the port. Furthermore, the socket that is created uses ``AF_INET`` and
+``SOCK_STREAM`` instead so we can connect over TCP.
