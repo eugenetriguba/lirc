@@ -38,7 +38,7 @@ class Client:
             command: A command from the lircd socket command interface.
 
         Returns:
-            A response object containing information on the command sent.
+            The data from the lirc response packet.
         """
         self.__connection.send(command)
 
@@ -84,8 +84,8 @@ class Client:
             remote: The remote to use keys from.
             key: The name of the key to start sending.
 
-        Returns:
-            The response of the command.
+        Raises:
+            LircdCommandFailure: If the command fails.
         """
         self.__last_send_start_remote = remote
         self.__last_send_start_key = key
@@ -104,8 +104,8 @@ class Client:
             since the most likely use case is sending a
             send_start and then a send_stop.
 
-        Returns:
-            The response of the command.
+        Raises:
+            LircdCommandFailure: If the command fails.
         """
         if remote:
             remote_to_stop = remote
@@ -128,8 +128,11 @@ class Client:
         List all the remotes that lirc has in
         its `lircd.conf.d` folder.
 
+        Raises:
+            LircdCommandFailure: If the command fails.
+
         Returns:
-            The response of the command.
+            The list of all remotes.
         """
         return self.__send_command("LIST")
 
@@ -140,8 +143,11 @@ class Client:
         Args:
             remote: The remote to list the keys of.
 
+        Raises:
+            LircdCommandFailure: If the command fails.
+
         Returns:
-            The response of the command.
+            The list of keys from the remote.
         """
         return self.__send_command(f"LIST {remote}")
 
@@ -150,8 +156,8 @@ class Client:
         Send a lircd SET_INPUTLOG command which sets
         the path to log all lircd received data to.
 
-        Returns:
-            The response of the command.
+        Raises:
+            LircdCommandFailure: If the command fails.
         """
         self.__send_command(f"SET_INPUTLOG {path}")
 
@@ -159,8 +165,8 @@ class Client:
         """
         Stop logging to the inputlog path from start_logging.
 
-        Returns:
-            The response of the command.
+        Raises:
+            LircdCommandFailure: If the command fails.
         """
         # When calling SET_INPUTLOG without the path argument,
         # it will stop logging and close the logfile.
@@ -170,15 +176,20 @@ class Client:
         """
         Retrieve the version of LIRC
 
+        Raises:
+            LircdCommandFailure: If the command fails.
+
         Returns:
-            The response of the command with
-            the version in the data field.
+            The version of LIRC being used.
         """
         return self.__send_command("VERSION")
 
     def driver_option(self, key: str, value: str) -> None:
         """
         Set driver-specific option named key to given value.
+
+        Raises:
+            LircdCommandFailure: If the command fails.
         """
         self.__send_command(f"DRV_OPTION {key} {value}")
 
@@ -188,12 +199,20 @@ class Client:
         """
         The --allow-simulate command line option must be active for this
         command not to fail.
+
+        Raises:
+            LircdCommandFailure: If the command fails.
         """
         self.__send_command(
             "SIMULATE %016d %02d %s %s\n" % (keycode, repeat_count, key, remote)
         )
 
     def set_transmitters(self, transmitters: Union[int, List[int]]) -> None:
+        """
+
+        Raises:
+            LircdCommandFailure: If the command fails.
+        """
         mask = transmitters
 
         if isinstance(transmitters, List):
