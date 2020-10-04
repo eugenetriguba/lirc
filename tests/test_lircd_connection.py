@@ -103,13 +103,6 @@ def test_that_readline_retrieves_data_from_socket_and_adds_to_buffer(
     assert mock_connection._LircdConnection__buffer == expected_buffer
 
 
-@pytest.mark.skipif(
-    system() == "Windows" or system() == "Darwin",
-    reason=(
-        "CI runs on Windows, macOS, and Linux, "
-        "but it would not work on Windows or macOS in CI."
-    ),
-)
 def test_that_readline_raises_timeout_error_if_no_data_from_socket():
     timeout = 0.001
     error_threshold = 0.01
