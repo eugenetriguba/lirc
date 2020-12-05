@@ -10,6 +10,7 @@
 __pycache__/
 dist/
 .python-version
+.venv/
 
 # Testing
 .pytest_cache/
