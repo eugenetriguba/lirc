@@ -17,7 +17,7 @@ class Client:
             depending on the operating system if one is not provided.
 
         Raises:
-            ValueError: If connection is not a LircdConnection.
+            ValueError: If connection is not an instance of LircdConnection.
             LircdConnectionError: If the socket cannot connect to the address.
         """
         # Used for start_repeat and stop_repeat
