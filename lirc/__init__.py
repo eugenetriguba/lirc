@@ -1,19 +1,6 @@
-from .exceptions import (
-    InvalidReplyPacketFormatError,
-    LircError,
-    LircSocketError,
-    LircSocketTimeoutError,
-)
-from .lirc import Lirc
-from .response import LircResponse
+from lirc.client import Client
+from lirc.connection.lircd_connection import LircdConnection
 
 __version__ = "0.1.0"
 
-__all__ = [
-    "Lirc",
-    "LircResponse",
-    "LircError",
-    "LircSocketError",
-    "LircSocketTimeoutError",
-    "InvalidReplyPacketFormatError",
-]
+__all__ = ["Client", "LircdConnection"]

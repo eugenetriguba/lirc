@@ -30,8 +30,10 @@ LIRC Python Package
    :alt: License
 
 This is a python package that allows you to interact with the daemon in the
-`Linux Infrared Remote Control <https://lirc.org>`_ package. Interacting with
-the daemon allows you to send IR signals from a computer.
+`Linux Infrared Remote Control <https://lirc.org>`_ package. By interacting
+with the daemon, it allows you to programmatically send IR signals from a
+computer. This package is for emitting IR signals, but it does not support
+listening to IR codes.
 
 More information on the lircd daemon, socket interface,
 reply packet format, etc. can be found at https://www.lirc.org/html/lircd.html
@@ -53,42 +55,87 @@ system as well.
 More information on that can be found in the `installation <https://lirc.readthedocs.io/en/latest/installation.html>`_
 portion of the documentation.
 
-Using the Lirc Package
-----------------------
+Usage Quick Start
+-----------------
+
+Customizing the Client
+^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: python
 
-  from lirc import Lirc
+  import lirc
 
-  lirc = Lirc()
-  response = lirc.version()
+  client = lirc.Client()
 
-  print(response.command)
-  >>> 'VERSION'
-  print(response.success)
-  >>> True
-  print(response.data)
-  >>> ['0.10.1']
+  print(client.version())
+  >>> '0.10.1'
 
-To get started with the package, we import ``Lirc`` and can
-initialize it with the defaults by passing it no arguments.
+To use this package, we instantiate a ``Client``. When we initialize
+the ``Client`` in the example above, we use the defaults by passing
+it no arguments.
 
-This will assume a socket path of ``/var/run/lirc/lircd``.
-Furthermore, this will also then assume a socket connection
-using ``AF_UNIX`` and ``SOCK_STREAM``. These are both the defaults
-that should work on a Linux system. There are ports of LIRC
-to Windows and macOS but using the package there is far less
-common. However, both of these are configurable through options
-passed to ``Lirc`` to allow it to be used on those operating systems
-as well.
+The defaults use the ``LircdConnection`` class. These defaults depend
+on your operating system and can be looked up in the full documentation.
+However, we can customize these defaults if desired.
 
-After sending any command to the LIRC daemon, this package will create
-a ``LircResponse`` for us that it returns. That response contains the
-command we sent to LIRC, whether it was successful, and any data that
-was returned back to us.
+.. code-block:: python
+
+  import socket
+  import lirc
+
+  client = lirc.Client(
+    connection=lirc.LircdConnection(
+      address="/var/run/lirc/lircd",
+      socket=socket.socket(socket.AF_UNIX, socket.SOCK_STREAM),
+      timeout = 5.0
+    )
+  )
+
+The address specifies how to reach the lircd daemon. On Windows, we pass
+a ``(hostname, port)`` tuple since we connect over TCP. However on Linux and
+macOS, we pass in the socket path as a string. For the client in the example
+above, we set it up using the defaults for a Linux machine. While it illustrates
+what is customizable, it is not a practical example since you could just call
+``Client()`` if you're on Linux and achieve the same outcome.
+
+Sending IR
+^^^^^^^^^^
+
+.. code-block:: python
+
+  import lirc
+
+  client = lirc.Client()
+  client.send("my-remote-name", "KEY_POWER")
+  client.send("my-remote-name", "KEY_3", repeat_count=2)
+
+
+With sending IR, we can use the `send` method and optionally,
+send multiple by using the `repeat_count` keyword argument.
+
+Handling Errors
+^^^^^^^^^^^^^^^
+
+.. code-block:: python
+
+  import lirc
+
+  client = lirc.Client()
+
+  try:
+      client.send('some-remote', 'key_power')
+  except lirc.LircdCommandFailureError as error:
+      print('The command we sent failed! Check the error message')
+      print(error)
+
+If the command was not successful, a ``LircdCommandFailureError`` exception will be thrown.
+There are other errors that may be raised, which can be looked up in the full documentation,
+but this is the most likely when sending commands.
+
 
 Further Documentation
 ---------------------
 
-More information on how to setup the system installed LIRC, how to use this python library,
-and a full API specification can be found at https://lirc.readthedocs.io/
+More information on how to setup the system installed LIRC, how to use
+this python library, and a full API specification can be found at
+https://lirc.readthedocs.io/
