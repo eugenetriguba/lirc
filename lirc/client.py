@@ -1,5 +1,5 @@
-from typing import List, Union
 from pathlib import Path
+from typing import List, Union
 
 from .connection.lircd_connection import LircdConnection
 from .exceptions import LircdCommandFailureError
@@ -23,10 +23,10 @@ class Client:
         """
         if not connection:
             connection = LircdConnection()
-        
+
         if not isinstance(connection, LircdConnection):
             raise ValueError("`connection` must be an instance of `LircdConnection`")
-        
+
         # Used for start_repeat and stop_repeat
         self.__last_send_start_remote = None
         self.__last_send_start_key = None
@@ -210,7 +210,7 @@ class Client:
 
         Example Format:
             <code> <repeat count> <button name> <remote control name>
-        
+
             Such as:
                 0000000000f40bf0 00 KEY_UP ANIMAX
 
@@ -238,7 +238,7 @@ class Client:
             c = lirc.Client()
             c.set_transmitters(1)
             c.set_transmitters([1,3,5])
-        
+
         Args:
             transmitters: The transmitters to set active.
 
