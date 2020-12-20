@@ -60,10 +60,8 @@ class Client:
 
         return parser_data
 
-    def close(self):
-        """
-        Close the connection to the socket.
-        """
+    def close(self) -> None:
+        """Close the connection to the socket."""
         self.__connection.close()
 
     def send(self, remote: str, key: str, repeat_count: int = 1) -> None:

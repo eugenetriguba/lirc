@@ -1,5 +1,6 @@
+#####
 Usage
-=====
+#####
 
 Once you've installed the ``lirc`` python package, there will be a number
 of things you can now import from it to get started.
@@ -12,8 +13,9 @@ The most relevant of these is ``Client``, since this is the main class
 you will be using. ``LircdConnection`` is the object that is used to configure
 the connection to LIRC when you initialize the ``Client``.
 
+*****************
 Initializing Lirc
------------------
+*****************
 
 The ``Client`` class takes in one optional keyword argument: connection.
 This connection must be a ``LircdConnection``. This connection, if not
@@ -28,7 +30,7 @@ arguments at all.
   lirc_client = Client()
 
 Overriding LIRC Defaults on Initialization
-------------------------------------------
+==========================================
 
 However, if we the defaults don't work for us? Let's say we're on Windows
 and we want to connect over TCP to a remote LIRC server on another Windows
@@ -50,7 +52,7 @@ just to show that we can, these are already the defaults on Windows.
   )
 
 LIRC Initialization Defaults per Operating System
------------------------------------------------
+=================================================
 
 From the options we may pass into the ``LircdConnection``, ``address``
 and ``socket`` will change depending on the operating system you are using.
@@ -61,7 +63,7 @@ On Linux, this will attempt to connect to the lircd socket at
 ``SOCK_STREAM``.
 
 On macOS, it will be almost identical to Linux except that all the paths
-on macOS will be prefixed by ``/opt/local/`` so the connection to the lircd
+will be prefixed by ``/opt/local/`` so the connection to the lircd
 socket will instead be at ``/opt/local/var/run/lirc/lircd``. The socket that
 is created will be the same.
 
@@ -71,3 +73,32 @@ for the address, it defaults to a tuple of ("localhost", 8765), which is the
 default on WinLIRC. The first part contains the address whereas the second is
 the port. Furthermore, the socket that is created uses ``AF_INET`` and
 ``SOCK_STREAM`` instead so we can connect over TCP.
+
+****************
+Sending IR Codes
+****************
+
+In order to send IR signals with our remote, we can use the ``send`` method on
+the ``lirc.Client``.
+
+.. code-block:: python
+
+  import lirc
+
+  client = lirc.Client()
+  client.send('our-remote-name', 'key-in-the-remote-file')
+
+Using the ``send()`` method is quite simple. For any method, such as this one, that
+takes in a remote and a key, the parameters are always in that order with the remote
+name first and then the key name. Because the ``send`` method does not get any meaningful
+data back from lircd, there is no return value from it. Instead, as is the case for most
+methods here that don't have a meaningful return value, a ``lirc.LircdCommandFailureError``
+is raised if the command we sent failed.
+
+Furthermore, we can also send the key in rapid succession. This is useful if we, say,
+want to go to channel 33.
+
+.. code-block:: python
+
+  client.send('our-remote-name', 'key_3', repeat_count=2)
+
