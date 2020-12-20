@@ -60,7 +60,7 @@ class LircdConnection(AbstractConnection):
 
         Raises:
             LircdConnectionError: If the address is invalid or lircd
-            is not running.
+                is not running.
         """
         try:
             self.__socket.connect(self.__address)
@@ -120,11 +120,11 @@ class LircdConnection(AbstractConnection):
 
         Raises:
             TimeoutError: If we are not able to grab data from
-            the socket in a specified amount of time (the initial
-            timeout time on initialization).
+                the socket in a specified amount of time (the initial
+                timeout time on initialization).
 
             LircdSocketError: If some other error happened when
-            trying to read from the socket.
+                trying to read from the socket.
 
         Returns:
             A line from the lircd socket.

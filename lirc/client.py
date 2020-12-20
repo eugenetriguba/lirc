@@ -102,14 +102,14 @@ class Client:
         """
         Send an lircd SEND_STOP command.
 
+        The remote and key default to the remote and key
+        last used with send_start if they are not specified,
+        since the most likely use case is sending a send_start
+        and then a send_stop.
+
         Args:
             remote: The remote to stop.
             key: The key to stop sending.
-
-            These default to the remote and key
-            last used with send_start if not specified,
-            since the most likely use case is sending a
-            send_start and then a send_stop.
 
         Raises:
             LircdCommandFailure: If the command fails.
@@ -219,8 +219,8 @@ class Client:
             key: The key on the remote to simulate.
             repeat_count: The number of times to simulate the key press.
             keycode: lircd(8) describes this option as a 16 hexadecimal digit
-            number encoding of the IR signal. However, it says it is depreciated
-            and should be ignored.
+                number encoding of the IR signal. However, it says it is depreciated
+                and should be ignored.
 
         Raises:
             LircdCommandFailure: If the command fails.
@@ -235,8 +235,11 @@ class Client:
 
         Example:
             import lirc
+
             c = lirc.Client()
+
             c.set_transmitters(1)
+
             c.set_transmitters([1,3,5])
 
         Args:
