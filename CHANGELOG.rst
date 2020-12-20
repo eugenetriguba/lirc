@@ -7,6 +7,17 @@ The format is based on `Keep a
 Changelog <https://keepachangelog.com/en/1.0.0/>`_, and this project
 adheres to `Semantic Versioning <https://semver.org/spec/v2.0.0.html>`_.
 
+Unreleased
+------------------
+
+**Removed**
+
+- `socket` property from `LircdConnection`.
+
+**Fixed**
+
+- The `remote` and `key` optional arguments to the `lirc.Client`'s `stop_repeat`
+  method were not overriding the last sent remote and key.
 
 0.2.0 - 2020-12-13
 ------------------
