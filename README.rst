@@ -28,6 +28,9 @@ LIRC Python Package
 .. image:: https://img.shields.io/pypi/l/lirc
    :target: https://pypi.python.org/pypi/lirc/
    :alt: License
+.. image:: https://img.shields.io/badge/platform-linux%20%7C%20macos%20%7C%20windows-%23F9F9F9
+   :target: https://lirc.readthedocs.io/en/latest/installation.html
+   :alt: Platform Support
 
 This is a python package that allows you to interact with the daemon in the
 `Linux Infrared Remote Control <https://lirc.org>`_ package. By interacting
