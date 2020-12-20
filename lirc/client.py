@@ -1,4 +1,5 @@
 from typing import List, Union
+from pathlib import Path
 
 from .connection.lircd_connection import LircdConnection
 from .exceptions import LircdCommandFailureError
@@ -8,7 +9,7 @@ from .reply_packet_parser import ReplyPacketParser
 class Client:
     """Communicate with the lircd daemon."""
 
-    def __init__(self, connection: LircdConnection = LircdConnection()) -> None:
+    def __init__(self, connection: LircdConnection = None) -> None:
         """
         Initialize the client by connecting to the lircd socket.
 
@@ -20,12 +21,15 @@ class Client:
             ValueError: If connection is not an instance of LircdConnection.
             LircdConnectionError: If the socket cannot connect to the address.
         """
+        if not connection:
+            connection = LircdConnection()
+        
+        if not isinstance(connection, LircdConnection):
+            raise ValueError("`connection` must be an instance of `LircdConnection`")
+        
         # Used for start_repeat and stop_repeat
         self.__last_send_start_remote = None
         self.__last_send_start_key = None
-
-        if not isinstance(connection, LircdConnection):
-            raise ValueError("`connection` must be an instance of `LircdConnection`")
 
         self.__connection = connection
         self.__connection.connect()
@@ -110,10 +114,10 @@ class Client:
         Raises:
             LircdCommandFailure: If the command fails.
         """
-        if self.__last_send_start_remote:
+        if not remote and self.__last_send_start_remote:
             remote = self.__last_send_start_remote
 
-        if self.__last_send_start_key:
+        if not key and self.__last_send_start_key:
             key = self.__last_send_start_key
 
         self.__send_command(f"SEND_STOP {remote} {key}")
@@ -146,10 +150,13 @@ class Client:
         """
         return self.__send_command(f"LIST {remote}")
 
-    def start_logging(self, path: str) -> None:
+    def start_logging(self, path: Union[str, Path]) -> None:
         """
         Send a lircd SET_INPUTLOG command which sets
         the path to log all lircd received data to.
+
+        Args:
+            path: The path to start logging lircd recieved data to.
 
         Raises:
             LircdCommandFailure: If the command fails.
@@ -183,6 +190,10 @@ class Client:
         """
         Set driver-specific option named key to given value.
 
+        Args:
+            key: The key to set for the driver.
+            value: The value for the key to set.
+
         Raises:
             LircdCommandFailure: If the command fails.
         """
@@ -192,8 +203,24 @@ class Client:
         self, remote: str, key: str, repeat_count: int = 1, keycode: int = 0
     ) -> None:
         """
+        Simulate an IR event.
+
         The --allow-simulate command line option to `lircd` must be active for this
         command not to fail.
+
+        Example Format:
+            <code> <repeat count> <button name> <remote control name>
+        
+            Such as:
+                0000000000f40bf0 00 KEY_UP ANIMAX
+
+        Args:
+            remote: The remote to simulate key presses from.
+            key: The key on the remote to simulate.
+            repeat_count: The number of times to simulate the key press.
+            keycode: lircd(8) describes this option as a 16 hexadecimal digit
+            number encoding of the IR signal. However, it says it is depreciated
+            and should be ignored.
 
         Raises:
             LircdCommandFailure: If the command fails.
@@ -204,6 +231,16 @@ class Client:
 
     def set_transmitters(self, transmitters: Union[int, List[int]]) -> None:
         """
+        Set the active transmitters.
+
+        Example:
+            import lirc
+            c = lirc.Client()
+            c.set_transmitters(1)
+            c.set_transmitters([1,3,5])
+        
+        Args:
+            transmitters: The transmitters to set active.
 
         Raises:
             LircdCommandFailure: If the command fails.
