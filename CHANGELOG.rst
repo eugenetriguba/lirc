@@ -10,6 +10,11 @@ adheres to `Semantic Versioning <https://semver.org/spec/v2.0.0.html>`_.
 Unreleased
 ------------------
 
+**Changed**
+
+- ``lirc.Client`` raises a ``TypeError`` instead of a ``ValueError`` now
+  if a ``connection`` is passed in that is not an instance of ``LircdConnection``.
+
 **Removed**
 
 - ``socket`` property from ``LircdConnection``.

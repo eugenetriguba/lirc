@@ -18,14 +18,14 @@ class Client:
             depending on the operating system if one is not provided.
 
         Raises:
-            ValueError: If connection is not an instance of LircdConnection.
+            TypeError: If connection is not an instance of LircdConnection.
             LircdConnectionError: If the socket cannot connect to the address.
         """
         if not connection:
             connection = LircdConnection()
 
         if not isinstance(connection, LircdConnection):
-            raise ValueError("`connection` must be an instance of `LircdConnection`")
+            raise TypeError("`connection` must be an instance of `LircdConnection`")
 
         # Used for start_repeat and stop_repeat
         self.__last_send_start_remote = None
