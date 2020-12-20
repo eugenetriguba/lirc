@@ -44,7 +44,7 @@ class LircdConnection(AbstractConnection):
 
         if address is None:
             address = default.address
-        
+
         if socket is None:
             socket = default.socket
 

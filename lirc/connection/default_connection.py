@@ -21,14 +21,10 @@ class DefaultConnection:
             A socket.socket setup correctly for the current OS.
         """
         if self.__operating_system == "Linux" or self.__operating_system == "Darwin":
-            return socket.socket(
-                socket.AF_UNIX, socket.SOCK_STREAM
-            )
+            return socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
 
         if self.__operating_system == "Windows":
-            return socket.socket(
-                socket.AF_INET, socket.SOCK_STREAM
-            )
+            return socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     @property
     def address(self) -> Union[str, Tuple[str, int]]:
