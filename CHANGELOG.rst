@@ -12,11 +12,11 @@ Unreleased
 
 **Removed**
 
-- `socket` property from `LircdConnection`.
+- ``socket`` property from ``LircdConnection``.
 
 **Fixed**
 
-- The `remote` and `key` optional arguments to the `lirc.Client`'s `stop_repeat`
+- The ``remote`` and ``key`` optional arguments to the ``lirc.Client``'s ``stop_repeat``
   method were not overriding the last sent remote and key.
 
 0.2.0 - 2020-12-13
