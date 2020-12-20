@@ -4,6 +4,12 @@ from lirc import Client, LircdConnection
 
 
 def test_that_custom_connections_can_be_used(mock_socket):
+    """
+    lirc.Client.__init__
+
+    Ensure we can pass in custom connections using the
+    keyword argument instead of relying on the default.
+    """
     connection = LircdConnection(socket=mock_socket)
     client = Client(connection=connection)
 
@@ -22,7 +28,7 @@ def test_that_close_closes_the_socket(mock_client_and_connection):
 
     client.close()
 
-    connection.socket.close.assert_called()
+    connection._LircdConnection__socket.close.assert_called()
 
 
 @pytest.mark.parametrize(
@@ -61,8 +67,12 @@ def test_that_client_commands_send_the_correct_command(
     mock_client_and_connection, client_command, args, lircd_command
 ):
     client, connection = mock_client_and_connection
-    connection.socket.recv.return_value = b"BEGIN\nCOMMAND\nSUCCESS\nEND\n"
+    connection._LircdConnection__socket.recv.return_value = (
+        b"BEGIN\nCOMMAND\nSUCCESS\nEND\n"
+    )
 
     getattr(client, client_command)(**args)
 
-    connection.socket.sendall.assert_called_with((lircd_command + "\n").encode("utf-8"))
+    connection._LircdConnection__socket.sendall.assert_called_with(
+        (lircd_command + "\n").encode("utf-8")
+    )

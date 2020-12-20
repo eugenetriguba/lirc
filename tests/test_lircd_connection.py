@@ -25,14 +25,14 @@ def test_socket_and_address_have_correct_cross_platform_values(
     expected_socket = connection._LircdConnection__socket
     expected_address = connection._LircdConnection__address
 
-    assert connection.socket.family == expected_socket.family
-    assert connection.socket.type == expected_socket.type
+    assert connection._LircdConnection__socket.family == expected_socket.family
+    assert connection._LircdConnection__socket.type == expected_socket.type
     assert connection.address == expected_address
 
 
 def test_close_closes_the_socket_connection(mock_connection):
     mock_connection.close()
-    mock_connection.socket.close.assert_called()
+    mock_connection._LircdConnection__socket.close.assert_called()
 
 
 def test_that_connection_error_is_raised_on_invalid_address():
@@ -50,7 +50,7 @@ def test_that_send_adds_a_newline_to_the_end_if_not_present(
     mock_connection, test_command
 ):
     mock_connection.send(test_command)
-    mock_connection.socket.sendall.assert_called_with(
+    mock_connection._LircdConnection__socket.sendall.assert_called_with(
         f"{test_command}\n".encode("utf-8")
     )
 
@@ -70,7 +70,9 @@ def test_that_send_sends_the_command_unaltered_to_the_socket_if_in_correct_forma
     mock_connection, test_command
 ):
     mock_connection.send(test_command)
-    mock_connection.socket.sendall.assert_called_with(test_command.encode("utf-8"))
+    mock_connection._LircdConnection__socket.sendall.assert_called_with(
+        test_command.encode("utf-8")
+    )
 
 
 @pytest.mark.parametrize(
@@ -95,7 +97,7 @@ def test_that_readline_uses_buffer_if_items_are_present_in_it(
 def test_that_readline_retrieves_data_from_socket_and_adds_to_buffer(
     mock_connection, socket_payload, expected_return, expected_buffer
 ):
-    mock_connection.socket.recv.return_value = socket_payload
+    mock_connection._LircdConnection__socket.recv.return_value = socket_payload
 
     line = mock_connection.readline()
 
