@@ -22,11 +22,6 @@ class AbstractConnection(ABC):
 
     @property
     @abstractmethod
-    def socket(self) -> socket.socket:
-        pass
-
-    @property
-    @abstractmethod
     def address(self) -> Union[str, tuple]:
         pass
 

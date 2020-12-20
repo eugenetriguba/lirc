@@ -1,4 +1,4 @@
-import socket as stdlib_socket
+import socket
 from collections import deque
 from typing import Union
 
@@ -10,8 +10,8 @@ from .default_connection import DefaultConnection
 class LircdConnection(AbstractConnection):
     def __init__(
         self,
-        address: Union[str, tuple] = DefaultConnection().address,
-        socket: stdlib_socket.socket = DefaultConnection().socket,
+        address: Union[str, tuple] = None,
+        socket: socket.socket = None,
         timeout: float = 5.0,
     ):
         """
@@ -40,6 +40,14 @@ class LircdConnection(AbstractConnection):
             timeout: The amount of time to wait for data from the socket before
             we timeout.
         """
+        default = DefaultConnection()
+
+        if address is None:
+            address = default.address
+        
+        if socket is None:
+            socket = default.socket
+
         self.__buffer = deque()
         self.__buffer_size = 4096
         self.__address = address
@@ -65,11 +73,14 @@ class LircdConnection(AbstractConnection):
             raise LircdConnectionError(error)
 
     @property
-    def socket(self) -> stdlib_socket.socket:
-        return self.__socket
-
-    @property
     def address(self) -> str:
+        """
+        Retrieve the address that this lircd connection
+        is connected to.
+
+        Returns:
+            The current address being used.
+        """
         return self.__address
 
     def close(self):
@@ -81,6 +92,9 @@ class LircdConnection(AbstractConnection):
     def send(self, data: str):
         """
         Send a commend to the lircd socket connection.
+
+        Args:
+            data: The data to send to the lircd socket.
 
         Raises:
             TypeError: if data is not a string.
@@ -132,12 +146,12 @@ class LircdConnection(AbstractConnection):
                 self.__buffer.append(packet.decode("utf-8"))
 
             return self.__buffer.popleft()
-        except stdlib_socket.timeout:
+        except socket.timeout:
             raise TimeoutError(
                 "could not find any data on the socket after "
                 f"{self.__socket.gettimeout()} seconds, socket timed out."
             )
-        except stdlib_socket.error as error:
+        except socket.error as error:
             raise LircdSocketError(
                 f"An error occurred while reading from the lircd socket: {error}"
             )
