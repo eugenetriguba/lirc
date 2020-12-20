@@ -11,22 +11,34 @@ def test_that_custom_connections_can_be_used(mock_socket):
     keyword argument instead of relying on the default.
     """
     connection = LircdConnection(socket=mock_socket)
-    client = Client(connection=connection)
+
+    client = Client(connection=connection)  # SUT
 
     assert client._Client__connection == connection
 
 
 def test_that_custom_connection_that_is_not_a_lircd_connection_raises_error():
-    with pytest.raises(ValueError) as error:
-        Client(connection=Client())
+    """
+    lirc.Client.__init__
+
+    Ensure that passing in something that is not an instance of
+    LircdConnection raise a TypeError.
+    """
+    with pytest.raises(TypeError) as error:
+        Client(connection=Client())  # SUT
 
     assert "must be an instance of `LircdConnection`" in str(error)
 
 
 def test_that_close_closes_the_socket(mock_client_and_connection):
+    """
+    lirc.Client.close
+
+    Ensure that a call to close() calls the socket's close().
+    """
     client, connection = mock_client_and_connection
 
-    client.close()
+    client.close()  # SUT
 
     connection._LircdConnection__socket.close.assert_called()
 
@@ -66,12 +78,34 @@ def test_that_close_closes_the_socket(mock_client_and_connection):
 def test_that_client_commands_send_the_correct_command(
     mock_client_and_connection, client_command, args, lircd_command
 ):
+    """
+    lirc.Client.send
+    lirc.Client.start_repeat
+    lirc.Client.stop_repeat
+    lirc.Client.list_remotes
+    lirc.Client.list_remote_keys
+    lirc.Client.start_logging
+    lirc.Client.stop_logging
+    lirc.Client.version
+    lirc.Client.driver_option
+    lirc.Client.simulate
+    lirc.Client.set_transmitters
+
+    Ensure that all the commands that are wrappers around the lircd
+    commands send the correct lircd command when given various arguments.
+
+    Args:
+        mock_client_and_connection: Mocked client and connection to lircd.
+        client_command: The commond on the Client to call.
+        args: The args to call the client command with.
+        lircd_command: The expected corresponding command sent to lircd.
+    """
     client, connection = mock_client_and_connection
     connection._LircdConnection__socket.recv.return_value = (
         b"BEGIN\nCOMMAND\nSUCCESS\nEND\n"
     )
 
-    getattr(client, client_command)(**args)
+    getattr(client, client_command)(**args)  # SUT
 
     connection._LircdConnection__socket.sendall.assert_called_with(
         (lircd_command + "\n").encode("utf-8")
