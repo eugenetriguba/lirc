@@ -10,10 +10,22 @@ adheres to `Semantic Versioning <https://semver.org/spec/v2.0.0.html>`_.
 Unreleased
 ------------------
 
+**Added**
+
+- ``DefaultConnection.address`` and ``DefaultConnection.socket`` may raises
+  an ``UnsupportedOperatingSystemError`` if the operating system you're on
+  is not MacOS, Linux, or Windows.
+
 **Changed**
 
 - ``lirc.Client`` raises a ``TypeError`` instead of a ``ValueError`` now
   if a ``connection`` is passed in that is not an instance of ``LircdConnection``.
+
+- ``send`` on ``lirc.Client`` is now called ``send_once``.
+
+- ``start_repeat`` on ``lirc.Client`` is now called ``send_start``.
+
+- ``stop_repeat`` on ``lirc.Client`` is now called ``send_stop``.
 
 **Removed**
 
