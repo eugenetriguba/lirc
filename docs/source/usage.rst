@@ -78,7 +78,7 @@ the port. Furthermore, the socket that is created uses ``AF_INET`` and
 Sending IR Codes
 ****************
 
-In order to send IR signals with our remote, we can use the ``send`` method on
+In order to send IR signals with our remote, we can use the ``send_once`` method on
 the ``lirc.Client``.
 
 .. code-block:: python
