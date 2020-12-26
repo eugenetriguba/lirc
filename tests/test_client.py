@@ -1,6 +1,7 @@
 import pytest
 
 from lirc import Client, LircdConnection
+from lirc.exceptions import LircdCommandFailureError
 
 
 def test_that_custom_connections_can_be_used(mock_socket):
@@ -109,4 +110,44 @@ def test_that_client_commands_send_the_correct_command(
 
     connection._LircdConnection__socket.sendall.assert_called_with(
         (lircd_command + "\n").encode("utf-8")
+    )
+
+
+def test_unsuccessful_command_raises_custom_exception(mock_client_and_connection):
+    """
+    lirc.client.__send_command (which all lircd wrapper functions use)
+
+    Ensure that a lircd reply packet which is not successful raises a
+    LircdCommandFailureError.
+    """
+    client, connection = mock_client_and_connection
+    connection._LircdConnection__socket.recv.return_value = (
+        b"BEGIN\nCOMMAND\nERROR\nEND\n"
+    )
+
+    with pytest.raises(LircdCommandFailureError) as error:
+        client.send('remote', 'key')
+
+    assert 'The `SEND_ONCE remote key 1` command sent to lircd failed: []' in str(error)
+
+
+def test_last_start_repeat_remote_and_key_is_used(mock_client_and_connection):
+    """
+    lirc.client.start_repeat
+    lirc.client.stop_repeat
+
+    Ensure that when we call start_repeat, a subsequent call
+    to stop_repeat will use the remote and key start_repeat
+    had passed in as args if no args are provided to stop_repeat.
+    """
+    client, connection = mock_client_and_connection
+    connection._LircdConnection__socket.recv.return_value = (
+        b"BEGIN\nCOMMAND\nSUCCESS\nEND\n"
+    )
+    client.start_repeat('remote', 'key')
+
+    client.stop_repeat()  # SUT
+
+    connection._LircdConnection__socket.sendall.assert_called_with(
+        "SEND_STOP remote key\n".encode("utf-8")
     )
