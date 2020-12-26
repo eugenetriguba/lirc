@@ -149,6 +149,8 @@ class ReplyPacketParser:
 
         Raises:
             LircdInvalidReplyPacketError: If the line is empty.
+                However, this error is likely unreachable since
+                if the line is empty, feed() simply returns.
         """
         if line == "SIGHUP":
             self.__state = self.State.SIGHUP_END
