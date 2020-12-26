@@ -127,7 +127,7 @@ Handling Errors
 
   try:
       client.send_once('some-remote', 'key_power')
-  except lirc.LircdCommandFailureError as error:
+  except lirc.exceptions.LircdCommandFailureError as error:
       print('The command we sent failed! Check the error message')
       print(error)
 
