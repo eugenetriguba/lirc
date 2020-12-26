@@ -86,11 +86,11 @@ the ``lirc.Client``.
   import lirc
 
   client = lirc.Client()
-  client.send('our-remote-name', 'key-in-the-remote-file')
+  client.send_once('our-remote-name', 'key-in-the-remote-file')
 
-Using the ``send()`` method is quite simple. For any method, such as this one, that
+Using the ``send_once()`` method is quite simple. For any method, such as this one, that
 takes in a remote and a key, the parameters are always in that order with the remote
-name first and then the key name. Because the ``send`` method does not get any meaningful
+name first and then the key name. Because the ``send_once`` method does not get any meaningful
 data back from lircd, there is no return value from it. Instead, as is the case for most
 methods here that don't have a meaningful return value, a ``lirc.LircdCommandFailureError``
 is raised if the command we sent failed.
@@ -100,5 +100,5 @@ want to go to channel 33.
 
 .. code-block:: python
 
-  client.send('our-remote-name', 'key_3', repeat_count=2)
+  client.send_once('our-remote-name', 'key_3', repeat_count=2)
 

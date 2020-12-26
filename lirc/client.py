@@ -64,7 +64,7 @@ class Client:
         """Close the connection to the socket."""
         self.__connection.close()
 
-    def send(self, remote: str, key: str, repeat_count: int = 1) -> None:
+    def send_once(self, remote: str, key: str, repeat_count: int = 1) -> None:
         """
         Send an lircd SEND_ONCE command.
 
@@ -78,12 +78,12 @@ class Client:
         """
         self.__send_command(f"SEND_ONCE {remote} {key} {repeat_count}")
 
-    def start_repeat(self, remote: str, key: str) -> None:
+    def send_start(self, remote: str, key: str) -> None:
         """
         Send an lircd SEND_START command.
 
         This will repeat the given key until
-        stop_repeat() is called.
+        send_stop is called.
 
         Args:
             remote: The remote to use keys from.
@@ -96,7 +96,7 @@ class Client:
         self.__last_send_start_key = key
         self.__send_command(f"SEND_START {remote} {key}")
 
-    def stop_repeat(self, remote: str = "", key: str = "") -> None:
+    def send_stop(self, remote: str = "", key: str = "") -> None:
         """
         Send an lircd SEND_STOP command.
 

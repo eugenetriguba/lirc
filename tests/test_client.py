@@ -47,15 +47,15 @@ def test_that_close_closes_the_socket(mock_client_and_connection):
 @pytest.mark.parametrize(
     "client_command, args, lircd_command",
     [
-        ("send", {"remote": "REMOTE", "key": "KEY"}, "SEND_ONCE REMOTE KEY 1"),
+        ("send_once", {"remote": "REMOTE", "key": "KEY"}, "SEND_ONCE REMOTE KEY 1"),
         (
-            "send",
+            "send_once",
             {"remote": "REMOTE", "key": "KEY", "repeat_count": 5},
             "SEND_ONCE REMOTE KEY 5",
         ),
-        ("start_repeat", {"remote": "REMOTE", "key": "KEY"}, "SEND_START REMOTE KEY"),
-        ("stop_repeat", {}, "SEND_STOP  "),
-        ("stop_repeat", {"remote": "REMOTE", "key": "KEY"}, "SEND_STOP REMOTE KEY"),
+        ("send_start", {"remote": "REMOTE", "key": "KEY"}, "SEND_START REMOTE KEY"),
+        ("send_stop", {}, "SEND_STOP  "),
+        ("send_stop", {"remote": "REMOTE", "key": "KEY"}, "SEND_STOP REMOTE KEY"),
         ("list_remotes", {}, "LIST"),
         ("list_remote_keys", {"remote": "REMOTE"}, "LIST REMOTE"),
         ("start_logging", {"path": "PATH"}, "SET_INPUTLOG PATH"),
@@ -80,9 +80,9 @@ def test_that_client_commands_send_the_correct_command(
     mock_client_and_connection, client_command, args, lircd_command
 ):
     """
-    lirc.Client.send
-    lirc.Client.start_repeat
-    lirc.Client.stop_repeat
+    lirc.Client.send_once
+    lirc.Client.send_start
+    lirc.Client.send_stop
     lirc.Client.list_remotes
     lirc.Client.list_remote_keys
     lirc.Client.start_logging
@@ -126,27 +126,27 @@ def test_unsuccessful_command_raises_custom_exception(mock_client_and_connection
     )
 
     with pytest.raises(LircdCommandFailureError) as error:
-        client.send('remote', 'key')
+        client.send_once('remote', 'key')
 
     assert 'The `SEND_ONCE remote key 1` command sent to lircd failed: []' in str(error)
 
 
-def test_last_start_repeat_remote_and_key_is_used(mock_client_and_connection):
+def test_last_send_start_remote_and_key_is_used(mock_client_and_connection):
     """
-    lirc.client.start_repeat
-    lirc.client.stop_repeat
+    lirc.client.send_start
+    lirc.client.send_stop
 
-    Ensure that when we call start_repeat, a subsequent call
-    to stop_repeat will use the remote and key start_repeat
-    had passed in as args if no args are provided to stop_repeat.
+    Ensure that when we call send_start, a subsequent call
+    to send_stop will use the remote and key send_start
+    had passed in as args if no args are provided to send_stop.
     """
     client, connection = mock_client_and_connection
     connection._LircdConnection__socket.recv.return_value = (
         b"BEGIN\nCOMMAND\nSUCCESS\nEND\n"
     )
-    client.start_repeat('remote', 'key')
+    client.send_start('remote', 'key')
 
-    client.stop_repeat()  # SUT
+    client.send_stop()  # SUT
 
     connection._LircdConnection__socket.sendall.assert_called_with(
         "SEND_STOP remote key\n".encode("utf-8")

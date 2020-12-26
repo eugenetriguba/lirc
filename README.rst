@@ -109,11 +109,11 @@ Sending IR
   import lirc
 
   client = lirc.Client()
-  client.send("my-remote-name", "KEY_POWER")
-  client.send("my-remote-name", "KEY_3", repeat_count=2)
+  client.send_once("my-remote-name", "KEY_POWER")
+  client.send_once("my-remote-name", "KEY_3", repeat_count=2)
 
 
-With sending IR, we can use the `send` method and optionally,
+With sending IR, we can use the `send_once` method and optionally,
 send multiple by using the `repeat_count` keyword argument.
 
 Handling Errors
@@ -126,7 +126,7 @@ Handling Errors
   client = lirc.Client()
 
   try:
-      client.send('some-remote', 'key_power')
+      client.send_once('some-remote', 'key_power')
   except lirc.LircdCommandFailureError as error:
       print('The command we sent failed! Check the error message')
       print(error)
