@@ -24,3 +24,10 @@ class LircdCommandFailureError(LircError):
     For when we send a command to the LIRC server
     and that command fails to send, for whatever reason.
     """
+
+
+class UnsupportedOperatingSystemError(LircError):
+    """
+    Raised when there is an attempt to use an unsupported
+    operating system.
+    """
