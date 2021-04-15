@@ -1,29 +1,32 @@
-from unittest.mock import patch
 import socket
+from unittest.mock import patch
+
+import pytest
 
 from lirc.connection.default_connection import DefaultConnection
 from lirc.exceptions import UnsupportedOperatingSystemError
 
-import pytest
 
-
-@pytest.mark.parametrize("os, expected_socket, expected_address", [
-    (
-        "Windows",
-        socket.socket(socket.AF_INET, socket.SOCK_STREAM),
-        ("localhost", 8765)
-    ),
-    (
-        "Linux",
-        socket.socket(socket.AF_UNIX, socket.SOCK_STREAM),
-        "/var/run/lirc/lircd"
-    ),
-    (
-        "Darwin",
-        socket.socket(socket.AF_UNIX, socket.SOCK_STREAM),
-        "/opt/run/var/run/lirc/lircd"
-    )
-])
+@pytest.mark.parametrize(
+    "os, expected_socket, expected_address",
+    [
+        (
+            "Windows",
+            socket.socket(socket.AF_INET, socket.SOCK_STREAM),
+            ("localhost", 8765),
+        ),
+        (
+            "Linux",
+            socket.socket(socket.AF_UNIX, socket.SOCK_STREAM),
+            "/var/run/lirc/lircd",
+        ),
+        (
+            "Darwin",
+            socket.socket(socket.AF_UNIX, socket.SOCK_STREAM),
+            "/opt/run/var/run/lirc/lircd",
+        ),
+    ],
+)
 @patch("platform.system")
 def test_default_connection_has_correct_os_specific_socket_and_address(
     patched_system, os, expected_socket, expected_address

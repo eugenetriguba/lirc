@@ -1,7 +1,7 @@
 import pytest
 
-from lirc.reply_packet_parser import ReplyPacketParser
 from lirc.exceptions import LircdInvalidReplyPacketError
+from lirc.reply_packet_parser import ReplyPacketParser
 
 
 def test_starting_state_of_reply_packet_parser():
@@ -26,15 +26,7 @@ def test_parsing_version_reply_packet():
     is parsed correctly.
     """
     parser = ReplyPacketParser()
-    packet = [
-        "BEGIN\n",
-        "VERSION\n",
-        "SUCCESS\n",
-        "DATA\n",
-        "1\n",
-        "0.10.1\n",
-        "END\n"
-    ]
+    packet = ["BEGIN\n", "VERSION\n", "SUCCESS\n", "DATA\n", "1\n", "0.10.1\n", "END\n"]
 
     for line in packet:
         parser.feed(line)  # SUT
@@ -57,9 +49,10 @@ def test_parsing_remotes_reply_packet():
         "LIST\n",
         "SUCCESS\n",
         "DATA\n",
-        "1\n",
+        "2\n",
         "some-remote\n",
-        "END\n"
+        "some-other-remote\n",
+        "END\n",
     ]
 
     for line in packet:
@@ -67,7 +60,7 @@ def test_parsing_remotes_reply_packet():
 
     assert parser.success
     assert parser.is_finished
-    assert parser.data == ["some-remote"]
+    assert parser.data == ["some-remote", "some-other-remote"]
 
 
 def test_handling_of_sighup_packet():
@@ -110,7 +103,7 @@ def test_error_with_send_once():
         "DATA",
         "1",
         "hardware does not support sending",
-        "END"
+        "END",
     ]
 
     for line in packet:
@@ -137,50 +130,53 @@ def test_no_line_passed_to_feed():
     assert parser.data == []
 
 
-@pytest.mark.parametrize("packet", [
+@pytest.mark.parametrize(
+    "packet",
     [
-        "BEGIN\n",
-        "SIGHUP\n",
-        "invalid-expected-end\n",
+        [
+            "BEGIN\n",
+            "SIGHUP\n",
+            "invalid-expected-end\n",
+        ],
+        [
+            "BEGIN\n",
+            "VERSION\n",
+            "SUCCESS\n",
+            "DATA\n",
+            "1\n",
+            "0.10.1\n",
+            "invalid-expected-end\n",
+        ],
+        ["NOTBEGIN"],
+        [
+            "BEGIN\n",
+            "VERSION\n",
+            "not-SUCCESS-or-ERROR\n",
+            "DATA\n",
+            "1\n",
+            "0.10.1\n",
+            "END\n",
+        ],
+        [
+            "BEGIN\n",
+            "VERSION\n",
+            "SUCCESS\n",
+            "not-DATA-or-END\n",
+            "1\n",
+            "0.10.1\n",
+            "END\n",
+        ],
+        [
+            "BEGIN\n",
+            "VERSION\n",
+            "SUCCESS\n",
+            "DATA\n",
+            "not-a-line-count-left-number\n",
+            "0.10.1\n",
+            "END\n",
+        ],
     ],
-    [
-        "BEGIN\n",
-        "VERSION\n",
-        "SUCCESS\n",
-        "DATA\n",
-        "1\n",
-        "0.10.1\n",
-        "invalid-expected-end\n"
-    ],
-    ["NOTBEGIN"],
-    [
-        "BEGIN\n",
-        "VERSION\n",
-        "not-SUCCESS-or-ERROR\n",
-        "DATA\n",
-        "1\n",
-        "0.10.1\n",
-        "END\n"
-    ],
-    [
-        "BEGIN\n",
-        "VERSION\n",
-        "SUCCESS\n",
-        "not-DATA-or-END\n",
-        "1\n",
-        "0.10.1\n",
-        "END\n"
-    ],
-    [
-        "BEGIN\n",
-        "VERSION\n",
-        "SUCCESS\n",
-        "DATA\n",
-        "not-a-line-count-left-number\n",
-        "0.10.1\n",
-        "END\n"
-    ],
-])
+)
 def test_invalid_end_line_raises_error(packet):
     """
     lirc.reply_packet_parser.ReplyPacketParser.feed
@@ -192,3 +188,19 @@ def test_invalid_end_line_raises_error(packet):
     with pytest.raises(LircdInvalidReplyPacketError):
         for line in packet:
             parser.feed(line)  # SUT
+
+
+@pytest.mark.parametrize("line", [None, "", False])
+def test_command_state_raises_exception_on_empty_line(line):
+    """
+    lirc.reply_packet_parser.ReplyPacketParser.__command
+
+    Ensure that the command state raises an error when
+    an empty (or falsey) line is passed. This scenario
+    is unlikely to happen in practical use since the .feed()
+    method simply returns if we recieved an empty line.
+    """
+    parser = ReplyPacketParser()
+
+    with pytest.raises(LircdInvalidReplyPacketError):
+        parser._ReplyPacketParser__command(line)

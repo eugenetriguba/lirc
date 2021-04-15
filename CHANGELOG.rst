@@ -7,6 +7,18 @@ The format is based on `Keep a
 Changelog <https://keepachangelog.com/en/1.0.0/>`_, and this project
 adheres to `Semantic Versioning <https://semver.org/spec/v2.0.0.html>`_.
 
+Unreleased
+------------------
+
+**Fixed**
+
+- The ``Client``'s ``send_once`` method was sending an IR
+code twice by default. This is because the ``repeat_count``
+was set to 1 instead of 0, causing it to send the initial IR
+code and repeat it once. This is now set to 0. This is a breaking
+change, albiet minor and more of a fix.
+
+
 1.0.1 - 2020-12-26
 ------------------
 

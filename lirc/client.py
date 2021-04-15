@@ -64,14 +64,22 @@ class Client:
         """Close the connection to the socket."""
         self.__connection.close()
 
-    def send_once(self, remote: str, key: str, repeat_count: int = 1) -> None:
+    def send_once(self, remote: str, key: str, repeat_count: int = 0) -> None:
         """
         Send an lircd SEND_ONCE command.
 
         Args:
             key: The name of the key to send.
             remote: The remote to use keys from.
-            repeat_count: The number of times to press this key.
+            repeat_count: The number of times to repeat this key.
+                If this is set to 1, that means this key will be
+                sent twice (repeated once).
+
+        .. versionchanged:: 2.0.0
+            The repeat_count parameter has been changed to
+            have a default value of 0 instead of 1. This ensures
+            send_once only sends 1 IR signal instead of sending 1
+            and then repeating it (therefore, 2 signals).
 
         Raises:
             LircdCommandFailure: If the command fails.

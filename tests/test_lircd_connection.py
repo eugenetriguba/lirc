@@ -1,6 +1,6 @@
+import socket
 from collections import deque
 from unittest.mock import patch
-import socket
 
 import pytest
 
@@ -19,9 +19,7 @@ def test_close_closes_the_socket_connection(mock_connection):
     mock_connection._LircdConnection__socket.close.assert_called()
 
 
-def test_that_retrieving_the_address_property_retrieves_the_address(
-    mock_socket
-):
+def test_that_retrieving_the_address_property_retrieves_the_address(mock_socket):
     """
     lirc.connection.lircd_connection.LircdConnection.address
 
@@ -90,9 +88,7 @@ def test_that_a_socket_raises_general_error(mock_socket):
 
 
 @pytest.mark.parametrize("test_command", ["SEND_ONCE REMOTE KEY", ""])
-def test_that_send_adds_a_newline_to_the_end(
-    mock_connection, test_command
-):
+def test_that_send_adds_a_newline_to_the_end(mock_connection, test_command):
     """
     lirc.connection.lircd_connection.LircdConnection.send
 

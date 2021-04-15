@@ -1,3 +1,5 @@
+from unittest import mock
+
 import pytest
 
 from lirc import Client, LircdConnection
@@ -18,7 +20,9 @@ def test_that_custom_connections_can_be_used(mock_socket):
     assert client._Client__connection == connection
 
 
-def test_that_custom_connection_that_is_not_a_lircd_connection_raises_error():
+def test_that_custom_connection_that_is_not_a_lircd_connection_raises_error(
+    mock_connection,
+):
     """
     lirc.Client.__init__
 
@@ -26,9 +30,27 @@ def test_that_custom_connection_that_is_not_a_lircd_connection_raises_error():
     LircdConnection raise a TypeError.
     """
     with pytest.raises(TypeError) as error:
-        Client(connection=Client())  # SUT
+        Client(connection=Client(connection=mock_connection))  # SUT
 
     assert "must be an instance of `LircdConnection`" in str(error)
+
+
+def test_that_no_connection_passed_in_creates_default_one():
+    """
+    lirc.Client.__init__
+
+    Ensure that creating the Client without specifying the
+    connection as a keyword argument creates a default one.
+    """
+
+    class MockedLircdConnection(LircdConnection):
+        def __new__(cls, *args, **kwargs):
+            return mock.Mock(spec=cls)
+
+    with mock.patch("lirc.client.LircdConnection", MockedLircdConnection):
+        c = Client()
+
+    assert isinstance(c._Client__connection, MockedLircdConnection)
 
 
 def test_that_close_closes_the_socket(mock_client_and_connection):
@@ -47,7 +69,7 @@ def test_that_close_closes_the_socket(mock_client_and_connection):
 @pytest.mark.parametrize(
     "client_command, args, lircd_command",
     [
-        ("send_once", {"remote": "REMOTE", "key": "KEY"}, "SEND_ONCE REMOTE KEY 1"),
+        ("send_once", {"remote": "REMOTE", "key": "KEY"}, "SEND_ONCE REMOTE KEY 0"),
         (
             "send_once",
             {"remote": "REMOTE", "key": "KEY", "repeat_count": 5},
@@ -126,9 +148,9 @@ def test_unsuccessful_command_raises_custom_exception(mock_client_and_connection
     )
 
     with pytest.raises(LircdCommandFailureError) as error:
-        client.send_once('remote', 'key')
+        client.send_once("remote", "key")
 
-    assert 'The `SEND_ONCE remote key 1` command sent to lircd failed: []' in str(error)
+    assert "command sent to lircd failed: []" in str(error)
 
 
 def test_last_send_start_remote_and_key_is_used(mock_client_and_connection):
@@ -144,7 +166,7 @@ def test_last_send_start_remote_and_key_is_used(mock_client_and_connection):
     connection._LircdConnection__socket.recv.return_value = (
         b"BEGIN\nCOMMAND\nSUCCESS\nEND\n"
     )
-    client.send_start('remote', 'key')
+    client.send_start("remote", "key")
 
     client.send_stop()  # SUT
 
