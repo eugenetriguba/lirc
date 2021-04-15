@@ -35,8 +35,14 @@ LIRC Python Package
 This is a python package that allows you to interact with the daemon in the
 `Linux Infrared Remote Control <https://lirc.org>`_ package. By interacting
 with the daemon, it allows you to programmatically send IR signals from a
-computer. This package is for emitting IR signals, but it does not support
-listening to IR codes.
+computer.
+
+This package is for emitting IR signals, but it does not support listening to
+IR codes. If you'd like to monitor the IR signals you recieve on
+Linux, which has built-in support in the kernel for recieving IR signals, you
+can try using `python-evdev <https://python-evdev.readthedocs.io/en/latest/>`_.
+They have a `tutorial on reading the events <https://python-evdev.readthedocs.io/en/latest/tutorial.html#reading-events>`_.
+
 
 More information on the lircd daemon, socket interface,
 reply packet format, etc. can be found at https://www.lirc.org/html/lircd.html
@@ -56,13 +62,13 @@ is expected that LIRC is installed and setup on the given
 system as well.
 
 More information on that can be found in the `installation <https://lirc.readthedocs.io/en/latest/installation.html>`_
-portion of the documentation.
+portion of the full documentation.
 
-Usage Quick Start
------------------
+Quick Start
+-----------
 
-Customizing the Client
-^^^^^^^^^^^^^^^^^^^^^^
+Using the Client
+^^^^^^^^^^^^^^^^
 
 .. code-block:: python
 
@@ -73,13 +79,20 @@ Customizing the Client
   print(client.version())
   >>> '0.10.1'
 
-To use this package, we instantiate a ``Client``. When we initialize
-the ``Client`` in the example above, we use the defaults by passing
-it no arguments.
+To use this package, we instantiate a ``Client``. By initializing it
+with no arguments, the ``Client`` will attempt to connect to the lirc
+daemon with the default connection parameters for your operating system.
+These defaults depend on your operating system and can be looked up in the
+full documentation if you need different parameters.
 
-The defaults use the ``LircdConnection`` class. These defaults depend
-on your operating system and can be looked up in the full documentation.
-However, we can customize these defaults if desired.
+However, if you've instantiated the ``Client`` without any arguments,
+you don't get any errors, and you recieve a response from the ``version()``
+command, you are connected to the daemon.
+
+Customizing the Client
+^^^^^^^^^^^^^^^^^^^^^^
+
+As previously stated, we can customize these defaults if needed.
 
 .. code-block:: python
 
@@ -94,12 +107,20 @@ However, we can customize these defaults if desired.
     )
   )
 
-The address specifies how to reach the lircd daemon. On Windows, we pass
-a ``(hostname, port)`` tuple since we connect over TCP. However on Linux and
-macOS, we pass in the socket path as a string. For the client in the example
-above, we set it up using the defaults for a Linux machine. While it illustrates
-what is customizable, it is not a practical example since you could just call
-``Client()`` if you're on Linux and achieve the same outcome.
+The ``address`` specifies how to reach the lircd daemon. On Windows, we pass
+a ``(hostname, port)`` tuple since we connect over TCP such as ``('localhost', 8765)``.
+However on Linux and macOS, we pass in the path to the socket on the filesystem as a string.
+
+The ``socket`` is the connection type. On Linux/macOS, it will default to a UNIX
+domain socket connection, as specified above. On Windows, ``socket.socket(socket.AF_INET, socket.SOCK_STREAM)``
+is normally used for a connection over TCP.
+
+Lastly, ``timeout`` specifies the amount of time to wait when reading from the socket
+for a response.
+
+For the client in the example above, we set it up using the defaults for a Linux machine.
+While this example illustrates what is customizable, it is not a practical example since
+you could call ``Client()`` with no arguments if you're on Linux and achieve the same outcome.
 
 Sending IR
 ^^^^^^^^^^
@@ -110,7 +131,9 @@ Sending IR
 
   client = lirc.Client()
   client.send_once("my-remote-name", "KEY_POWER")
-  client.send_once("my-remote-name", "KEY_3", repeat_count=2)
+
+  # Go to channel "33"
+  client.send_once("my-remote-name", "KEY_3", repeat_count=1)
 
 
 With sending IR, we can use the `send_once` method and optionally,
@@ -132,9 +155,6 @@ Handling Errors
       print(error)
 
 If the command was not successful, a ``LircdCommandFailureError`` exception will be thrown.
-There are other errors that may be raised, which can be looked up in the full documentation,
-but this is the most likely when sending commands.
-
 
 Further Documentation
 ---------------------
