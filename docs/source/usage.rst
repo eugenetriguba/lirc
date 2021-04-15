@@ -19,9 +19,9 @@ Initializing Lirc
 
 The ``Client`` class takes in one optional keyword argument: connection.
 This connection must be a ``LircdConnection``. This connection, if not
-specified manually, will have default values that depend on the operating
-system you are on. So the simplest way to construct ``Client`` is with no
-arguments at all.
+specified manually, will have default values to connecting to lircd for
+the operating system you are using. So the simplest way to construct ``Client``
+is with no arguments at all.
 
 .. code-block:: python
 
@@ -32,11 +32,11 @@ arguments at all.
 Overriding LIRC Defaults on Initialization
 ==========================================
 
-However, if we the defaults don't work for us? Let's say we're on Windows
-and we want to connect over TCP to a remote LIRC server on another Windows
-machine. So we've passed in an ``address`` to override the default so it doesn't
-look for the daemon on the localhost. ``socket`` and ``timeout`` are passed in
-just to show that we can, these are already the defaults on Windows.
+However, if we the defaults don't work for us or we have a more complex setup?
+Let's say we're on Windows and we want to connect over TCP to a remote LIRC server
+on another Windows machine. So we've passed in an ``address`` to override the default
+so it doesn't look for the daemon on the localhost. ``socket`` and ``timeout`` are
+passed in just to show that we can, these are already the defaults on Windows.
 
 .. code-block:: python
 
@@ -92,7 +92,7 @@ Using the ``send_once()`` method is quite simple. For any method, such as this o
 takes in a remote and a key, the parameters are always in that order with the remote
 name first and then the key name. Because the ``send_once`` method does not get any meaningful
 data back from lircd, there is no return value from it. Instead, as is the case for most
-methods here that don't have a meaningful return value, a ``lirc.LircdCommandFailureError``
+methods here that don't have a meaningful return value, a ``lirc.exceptions.LircdCommandFailureError``
 is raised if the command we sent failed.
 
 Furthermore, we can also send the key in rapid succession. This is useful if we, say,
@@ -100,5 +100,5 @@ want to go to channel 33.
 
 .. code-block:: python
 
-  client.send_once('our-remote-name', 'key_3', repeat_count=2)
+  client.send_once('our-remote-name', 'key_3', repeat_count=1)
 
