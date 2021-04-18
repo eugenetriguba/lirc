@@ -34,15 +34,15 @@ Linux:
 
 Windows:
 
-  * WinLIRC at http://winlirc.sourceforge.net/ is a port for Windows.
+  * `WinLIRC <http://winlirc.sourceforge.net/>`_ is a port for Windows.
     It works a bit differently since it is just a collection of files
-    in a folder that you run. More information on that can be found
-    at `using LIRC on Windows <./using-lirc-on-windows.html>`_.
+    in a folder that you run. More information on setting up WinLIRC can be found
+    at `configuring the system LIRC <./configuring-system-lirc.html>`_.
 
 macOS:
 
-  * There is a port on MacPorts at https://ports.macports.org/port/lirc/summary
-    with it's source code on GitHub at https://github.com/andyvand/LIRC. However,
+  * There is `a port on MacPorts <https://ports.macports.org/port/lirc/summary>`_
+    with it's `source code on GitHub <https://github.com/andyvand/LIRC>`_. However,
     it doesn't appear to be maintained any longer and is not the latest LIRC version.
-    You can then run ``port install lirc`` or build the package from source using
-    the instructions on the README of the GitHub repository.
+    You can still install it using ``port install lirc`` or build the package from
+    source using the instructions on the README of the GitHub repository.

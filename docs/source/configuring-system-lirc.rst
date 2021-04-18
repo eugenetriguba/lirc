@@ -40,7 +40,11 @@ the remote configuration file. The RedRat3-II is now discontinued, although
 `its driver's are still available <https://www.redrat.co.uk/support/firmware-drivers/>`_, but you
 could look into the `RedRatX <https://www.redrat.co.uk/products/redrat-x/>`_ or see if you can
 find a `RedRat3-II used <https://www.ebay.com/sch/i.html?_nkw=redrat3-ii&_sacat=0>`_. Place this
-generated remote configuration file in your ``lircd.conf.d`` folder.
+generated remote configuration file in your ``/etc/lirc/lircd.conf.d`` folder.
+
+*******************************
+Iguanaworks IR Transciever Note
+*******************************
 
 If you're using an Iguanaworks IR Transciever, you may find the discussion below useful. Basically,
 the device should just work on the default driver.
@@ -61,8 +65,8 @@ macOS
 -----
 
 On macOS, the paths are almost the same as the Linux ones, just prefixed with ``/opt/local/``.
-Therefore, the LIRC configuration is typically at ``/opt/local/etc/lirc/`` and the lircd socket
-is at ``/opt/local/var/run/lirc/lircd``
+Therefore, the LIRC configuration is typically at ``/opt/local/etc/lirc/`` and the lircd
+socket is at ``/opt/local/var/run/lirc/lircd``.
 
 Refer to the Linux section for the rest of the configuration as they are almost the same besides
 the ``/opt/local/`` prefix. However, on macOS, there is also no ``default`` driver like there is
