@@ -109,8 +109,12 @@ As previously stated, we can customize these defaults if needed.
     )
   )
 
+For the client in the example above, we set it up using the defaults for a Linux machine.
+While this example illustrates what is customizable, it is not a practical example since
+you could call ``Client()`` with no arguments if you're on Linux and achieve the same outcome.
+
 See `Overriding LIRC Defaults on Initialization <https://lirc.readthedocs.io/en/stable/usage.html#overriding-lirc-defaults-on-initialization>`_
-for more.
+for more information.
 
 Sending IR
 ^^^^^^^^^^
