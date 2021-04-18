@@ -109,9 +109,9 @@ class Client:
         Send an lircd SEND_STOP command.
 
         The remote and key default to the remote and key
-        last used with send_start if they are not specified,
-        since the most likely use case is sending a send_start
-        and then a send_stop.
+        last used with ``send_start`` if they are not specified,
+        since the most likely use case is sending a ``send_start``
+        and then a ``send_stop``.
 
         Args:
             remote: The remote to stop.
@@ -131,7 +131,7 @@ class Client:
     def list_remotes(self) -> List[str]:
         """
         List all the remotes that lirc has in
-        its `lircd.conf.d` folder.
+        its ``/etc/lirc/lircd.conf.d`` folder.
 
         Raises:
             LircdCommandFailure: If the command fails.
@@ -211,19 +211,19 @@ class Client:
         """
         Simulate an IR event.
 
-        The --allow-simulate command line option to `lircd` must be active for this
+        The ``--allow-simulate`` command line option to lircd must be active for this
         command not to fail.
 
-        Example Format:
+        Lircd Format:
             <code> <repeat count> <button name> <remote control name>
 
-            Such as:
+            Example:
                 0000000000f40bf0 00 KEY_UP ANIMAX
 
         Args:
             remote: The remote to simulate key presses from.
             key: The key on the remote to simulate.
-            repeat_count: The number of times to simulate the key press.
+            repeat_count: The number of times to repeat the simulated key press.
             keycode: lircd(8) describes this option as a 16 hexadecimal digit
                 number encoding of the IR signal. However, it says it is depreciated
                 and should be ignored.
@@ -242,11 +242,11 @@ class Client:
         Example:
             import lirc
 
-            c = lirc.Client()
+            client = lirc.Client()
 
-            c.set_transmitters(1)
+            client.set_transmitters(1)
 
-            c.set_transmitters([1,3,5])
+            client.set_transmitters([1,3,5])
 
         Args:
             transmitters: The transmitters to set active.
