@@ -56,7 +56,7 @@ class DefaultConnection:
             return {
                 "Linux": "/var/run/lirc/lircd",
                 "Windows": ("localhost", 8765),
-                "Darwin": "/opt/run/var/run/lirc/lircd",
+                "Darwin": "/opt/local/var/run/lirc/lircd",
             }[self.__operating_system]
         except KeyError:
             raise UnsupportedOperatingSystemError(

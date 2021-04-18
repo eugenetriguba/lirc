@@ -23,7 +23,7 @@ from lirc.exceptions import UnsupportedOperatingSystemError
         (
             "Darwin",
             socket.socket(socket.AF_UNIX, socket.SOCK_STREAM),
-            "/opt/run/var/run/lirc/lircd",
+            "/opt/local/var/run/lirc/lircd",
         ),
     ],
 )
