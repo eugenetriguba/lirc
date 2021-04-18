@@ -34,7 +34,7 @@ LIRC Python Package
 
 This is a python package that allows you to interact with the daemon in the
 `Linux Infrared Remote Control <https://lirc.org>`_ package. By interacting
-with the daemon, it allows you to programmatically send IR signals from a
+with this daemon, it allows you to programmatically send IR signals from a
 computer.
 
 This package is for emitting IR signals, but it does not support listening to
@@ -82,12 +82,14 @@ Using the Client
 To use this package, we instantiate a ``Client``. By initializing it
 with no arguments, the ``Client`` will attempt to connect to the lirc
 daemon with the default connection parameters for your operating system.
+
 These defaults depend on your operating system and can be looked up in the
 full documentation if you need different parameters.
 
 However, if you've instantiated the ``Client`` without any arguments,
 you don't get any errors, and you recieve a response from the ``version()``
-command, you are connected to the daemon.
+command, you are connected to the daemon. Most people should not need to
+change the default parameters.
 
 Customizing the Client
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -107,20 +109,8 @@ As previously stated, we can customize these defaults if needed.
     )
   )
 
-The ``address`` specifies how to reach the lircd daemon. On Windows, we pass
-a ``(hostname, port)`` tuple since we connect over TCP such as ``('localhost', 8765)``.
-However on Linux and macOS, we pass in the path to the socket on the filesystem as a string.
-
-The ``socket`` is the connection type. On Linux/macOS, it will default to a UNIX
-domain socket connection, as specified above. On Windows, ``socket.socket(socket.AF_INET, socket.SOCK_STREAM)``
-is normally used for a connection over TCP.
-
-Lastly, ``timeout`` specifies the amount of time to wait when reading from the socket
-for a response.
-
-For the client in the example above, we set it up using the defaults for a Linux machine.
-While this example illustrates what is customizable, it is not a practical example since
-you could call ``Client()`` with no arguments if you're on Linux and achieve the same outcome.
+See `Overriding LIRC Defaults on Initialization <https://lirc.readthedocs.io/en/stable/usage.html#overriding-lirc-defaults-on-initialization>`_
+for more.
 
 Sending IR
 ^^^^^^^^^^
@@ -151,10 +141,11 @@ Handling Errors
   try:
       client.send_once('some-remote', 'key_power')
   except lirc.exceptions.LircdCommandFailureError as error:
-      print('The command we sent failed! Check the error message')
-      print(error)
+      print('Unable to send the power key!')
+      print(error)  # Error has more info on what lircd sent back.
 
-If the command was not successful, a ``LircdCommandFailureError`` exception will be thrown.
+If the command was not successful, a ``LircdCommandFailureError``
+exception will be thrown.
 
 Further Documentation
 ---------------------
