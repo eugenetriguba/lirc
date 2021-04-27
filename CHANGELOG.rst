@@ -10,17 +10,39 @@ adheres to `Semantic Versioning <https://semver.org/spec/v2.0.0.html>`_.
 2.0.0 - 2021-04-18
 ------------------
 
-**Fixed**
+**Fixed - Potential Breaking Changes**
 
-- POTENTIAL BREAKING CHANGE: The ``Client``'s ``send_once`` method was sending
+- The ``Client``'s ``send_once`` method was sending
   an IR code twice by default. This is because the ``repeat_count`` keyword argument
   was set to 1 instead of 0, causing it to send the initial IR code and repeat it once.
   This now defaults to 0.
+  
+  On v1, this can be worked around by explicitly specifying the ``repeat_count`` to only send 1 IR signal by setting it to 0:
+  
+  .. code-block:: python
+    
+    import lirc
+      
+    client = lirc.Client()
+    client.send_once('remote', 'key', repeat_count=0)
 
 - The ``Darwin`` connection to lircd was set to default to
   ``/opt/run/var/run/lirc/lircd`` when it should have been
   ``/opt/local/var/run/lirc/lircd``. This is unlikely to have
   an impact since the previous default directory was incorrect.
+  
+  On v1 and on macOS, this can also be worked around by explicitly specifying the connection path rather
+  than relying on the default.
+  
+  .. code-block:: python
+  
+    import lirc
+    
+    client = lirc.Client(
+      connection=lirc.LircdConnection(
+        address="/opt/local/var/run/lirc/lircd",
+      )
+    )
 
 1.0.1 - 2020-12-26
 ------------------
