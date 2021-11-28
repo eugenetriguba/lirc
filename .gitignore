@@ -12,6 +12,9 @@ dist/
 .python-version
 .venv/
 
+# asdf
+.tool-versions
+
 # Testing
 .pytest_cache/
 .coverage
