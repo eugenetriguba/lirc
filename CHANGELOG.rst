@@ -10,6 +10,12 @@ adheres to `Semantic Versioning <https://semver.org/spec/v2.0.0.html>`_.
 Unreleased
 ------------------
 
+**Changed**
+
+- All double underscore (`__`) internal attributes have been changed to instead
+  be prefixed by a single underscore (`_`). This removes the name mangling that Python
+  does on those attributes.
+
 **Fixed**
 
 - `lirc.Client` will throw a `TypeError` only if the passed `connection`

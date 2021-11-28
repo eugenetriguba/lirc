@@ -203,4 +203,4 @@ def test_command_state_raises_exception_on_empty_line(line):
     parser = ReplyPacketParser()
 
     with pytest.raises(LircdInvalidReplyPacketError):
-        parser._ReplyPacketParser__command(line)
+        parser._command(line)

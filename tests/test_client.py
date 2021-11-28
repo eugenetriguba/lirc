@@ -17,7 +17,7 @@ def test_that_custom_connections_can_be_used(mock_socket):
 
     client = Client(connection=connection)  # SUT
 
-    assert client._Client__connection == connection
+    assert client._connection == connection
 
 
 def test_that_custom_connection_that_is_not_an_abstract_connection_raises_error(
@@ -50,7 +50,7 @@ def test_that_no_connection_passed_in_creates_default_one():
     with mock.patch("lirc.client.LircdConnection", MockedLircdConnection):
         c = Client()
 
-    assert isinstance(c._Client__connection, MockedLircdConnection)
+    assert isinstance(c._connection, MockedLircdConnection)
 
 
 def test_that_close_closes_the_socket(mock_client_and_connection):
@@ -63,7 +63,7 @@ def test_that_close_closes_the_socket(mock_client_and_connection):
 
     client.close()  # SUT
 
-    connection._LircdConnection__socket.close.assert_called()
+    connection._socket.close.assert_called()
 
 
 @pytest.mark.parametrize(
@@ -124,13 +124,11 @@ def test_that_client_commands_send_the_correct_command(
         lircd_command: The expected corresponding command sent to lircd.
     """
     client, connection = mock_client_and_connection
-    connection._LircdConnection__socket.recv.return_value = (
-        b"BEGIN\nCOMMAND\nSUCCESS\nEND\n"
-    )
+    connection._socket.recv.return_value = b"BEGIN\nCOMMAND\nSUCCESS\nEND\n"
 
     getattr(client, client_command)(**args)  # SUT
 
-    connection._LircdConnection__socket.sendall.assert_called_with(
+    connection._socket.sendall.assert_called_with(
         (lircd_command + "\n").encode("utf-8")
     )
 
@@ -143,9 +141,7 @@ def test_unsuccessful_command_raises_custom_exception(mock_client_and_connection
     LircdCommandFailureError.
     """
     client, connection = mock_client_and_connection
-    connection._LircdConnection__socket.recv.return_value = (
-        b"BEGIN\nCOMMAND\nERROR\nEND\n"
-    )
+    connection._socket.recv.return_value = b"BEGIN\nCOMMAND\nERROR\nEND\n"
 
     with pytest.raises(LircdCommandFailureError) as error:
         client.send_once("remote", "key")
@@ -163,13 +159,11 @@ def test_last_send_start_remote_and_key_is_used(mock_client_and_connection):
     had passed in as args if no args are provided to send_stop.
     """
     client, connection = mock_client_and_connection
-    connection._LircdConnection__socket.recv.return_value = (
-        b"BEGIN\nCOMMAND\nSUCCESS\nEND\n"
-    )
+    connection._socket.recv.return_value = b"BEGIN\nCOMMAND\nSUCCESS\nEND\n"
     client.send_start("remote", "key")
 
     client.send_stop()  # SUT
 
-    connection._LircdConnection__socket.sendall.assert_called_with(
+    connection._socket.sendall.assert_called_with(
         "SEND_STOP remote key\n".encode("utf-8")
     )

@@ -16,7 +16,7 @@ def test_close_closes_the_socket_connection(mock_connection):
     """
     mock_connection.close()  # SUT
 
-    mock_connection._LircdConnection__socket.close.assert_called()
+    mock_connection._socket.close.assert_called()
 
 
 def test_that_retrieving_the_address_property_retrieves_the_address(mock_socket):
@@ -97,7 +97,7 @@ def test_that_send_adds_a_newline_to_the_end(mock_connection, test_command):
     """
     mock_connection.send(test_command)  # SUT
 
-    mock_connection._LircdConnection__socket.sendall.assert_called_with(
+    mock_connection._socket.sendall.assert_called_with(
         f"{test_command}\n".encode("utf-8")
     )
 
@@ -113,9 +113,7 @@ def test_that_send_does_not_add_too_many_newlines(mock_connection):
 
     mock_connection.send(command)  # SUT
 
-    mock_connection._LircdConnection__socket.sendall.assert_called_with(
-        f"{command}".encode("utf-8")
-    )
+    mock_connection._socket.sendall.assert_called_with(f"{command}".encode("utf-8"))
 
 
 @pytest.mark.parametrize("test_command", [5, False, 0.1, b"hello"])
@@ -147,7 +145,7 @@ def test_that_readline_uses_buffer_if_items_are_present_in_it(
 
     Ensure that readline uses the buffer if there are items in it.
     """
-    mock_connection._LircdConnection__buffer.extend(buffer_payload)
+    mock_connection._buffer.extend(buffer_payload)
 
     line = mock_connection.readline()  # SUT
 
@@ -171,12 +169,12 @@ def test_that_readline_retrieves_data_from_socket_and_adds_to_buffer(
     Ensure that when we call readline(), it adds to the buffer if we
     retrieved more than a single line.
     """
-    mock_connection._LircdConnection__socket.recv.return_value = socket_payload
+    mock_connection._socket.recv.return_value = socket_payload
 
     line = mock_connection.readline()  # SUT
 
     assert line == expected_return
-    assert mock_connection._LircdConnection__buffer == expected_buffer
+    assert mock_connection._buffer == expected_buffer
 
 
 @patch("socket.socket.recv")

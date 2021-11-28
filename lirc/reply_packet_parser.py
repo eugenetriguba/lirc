@@ -72,20 +72,20 @@ class ReplyPacketParser:
         # the given line to the function at our current state.
         # That function is then responsible for handling any errors
         # and advancing the state forward.
-        self.__fsm = {
-            self.State.BEGIN: self.__begin,
-            self.State.COMMAND: self.__command,
-            self.State.RESULT: self.__result,
-            self.State.DATA: self.__data,
-            self.State.LINE_COUNT_LEFT: self.__line_count_left,
-            self.State.DATA_BODY: self.__data_body,
-            self.State.SIGHUP_END: self.__sighup_end,
-            self.State.END: self.__end,
+        self._fsm = {
+            self.State.BEGIN: self._begin,
+            self.State.COMMAND: self._command,
+            self.State.RESULT: self._result,
+            self.State.DATA: self._data,
+            self.State.LINE_COUNT_LEFT: self._line_count_left,
+            self.State.DATA_BODY: self._data_body,
+            self.State.SIGHUP_END: self._sighup_end,
+            self.State.END: self._end,
         }
-        self.__state = self.State.BEGIN
-        self.__command_result = self.Result.UNDETERMINED
-        self.__data_response = []
-        self.__lines_left = None
+        self._state = self.State.BEGIN
+        self._command_result = self.Result.UNDETERMINED
+        self._data_response = []
+        self._lines_left = None
 
     @property
     def data(self) -> list:
@@ -95,7 +95,7 @@ class ReplyPacketParser:
         Returns:
             The data response.
         """
-        return self.__data_response
+        return self._data_response
 
     @property
     def is_finished(self) -> bool:
@@ -105,7 +105,7 @@ class ReplyPacketParser:
         Returns:
             True if we are in the finished state; False otherwise.
         """
-        return self.__state == self.State.FINISHED
+        return self._state == self.State.FINISHED
 
     @property
     def success(self) -> bool:
@@ -115,9 +115,9 @@ class ReplyPacketParser:
         Returns:
             True if the command result is success; False otherwise.
         """
-        return self.__command_result == self.Result.SUCCESS
+        return self._command_result == self.Result.SUCCESS
 
-    def __begin(self, line: str) -> None:
+    def _begin(self, line: str) -> None:
         """
         Handles the BEGIN state. This should be the
         state we start in and transition to reading in
@@ -130,13 +130,13 @@ class ReplyPacketParser:
             LircdInvalidReplyPacketError: If line is not BEGIN.
         """
         if line == "BEGIN":
-            self.__state = self.State.COMMAND
+            self._state = self.State.COMMAND
         else:
             raise LircdInvalidReplyPacketError(
                 f"Expected a BEGIN line from lircd, got `{line}`."
             )
 
-    def __command(self, line: str) -> None:
+    def _command(self, line: str) -> None:
         """
         Handles the COMMAND state. For parsing the reply packet,
         we don't care too much about this state. As long as we got
@@ -153,15 +153,15 @@ class ReplyPacketParser:
                 if the line is empty, feed() simply returns.
         """
         if line == "SIGHUP":
-            self.__state = self.State.SIGHUP_END
+            self._state = self.State.SIGHUP_END
         elif line:
-            self.__state = self.State.RESULT
+            self._state = self.State.RESULT
         else:
             raise LircdInvalidReplyPacketError(
                 f"Expected a command line from lircd, got `{line}`."
             )
 
-    def __result(self, line: str) -> None:
+    def _result(self, line: str) -> None:
         """
         Handles the RESULT state. An lircd result is
         either SUCCESS or ERROR, followed by data.
@@ -173,8 +173,8 @@ class ReplyPacketParser:
             LircdInvalidReplyPacketError: If the line is not SUCCESS or ERROR.
         """
         if line in ["SUCCESS", "ERROR"]:
-            self.__state = self.State.DATA
-            self.__command_result = (
+            self._state = self.State.DATA
+            self._command_result = (
                 self.Result.SUCCESS if line == "SUCCESS" else self.Result.FAIL
             )
         else:
@@ -182,7 +182,7 @@ class ReplyPacketParser:
                 f"Expected a result line from lircd, got `{line}`."
             )
 
-    def __data(self, line: str) -> None:
+    def _data(self, line: str) -> None:
         """
         Handles the DATA state. In this state,
         we could either be finished now if there is
@@ -196,15 +196,15 @@ class ReplyPacketParser:
             LircdInvalidReplyPacketError: If line is not END or DATA.
         """
         if line == "END":
-            self.__state = self.State.FINISHED
+            self._state = self.State.FINISHED
         elif line == "DATA":
-            self.__state = self.State.LINE_COUNT_LEFT
+            self._state = self.State.LINE_COUNT_LEFT
         else:
             raise LircdInvalidReplyPacketError(
                 f"Expected an END or DATA line from lircd, got `{line}`."
             )
 
-    def __line_count_left(self, line: str) -> None:
+    def _line_count_left(self, line: str) -> None:
         """
         Handles the LINE COUNT LEFT state. This corresponds
         to the `n` line in the packet format, since it tells
@@ -219,17 +219,15 @@ class ReplyPacketParser:
             lines left at this state.
         """
         try:
-            self.__lines_left = int(line)
+            self._lines_left = int(line)
         except ValueError:
             raise LircdInvalidReplyPacketError(
                 f"Expected a remaining line count line from lircd, got `{line}`."
             )
 
-        self.__state = (
-            self.State.END if self.__lines_left == 0 else self.State.DATA_BODY
-        )
+        self._state = self.State.END if self._lines_left == 0 else self.State.DATA_BODY
 
-    def __data_body(self, line: str) -> None:
+    def _data_body(self, line: str) -> None:
         """
         Handles the DATA BODY state by appending
         every line we recieve to the data response.
@@ -242,11 +240,11 @@ class ReplyPacketParser:
         Args:
             line: A line read in from an lircd connection.
         """
-        self.__data_response.append(line)
-        if len(self.__data_response) >= self.__lines_left:
-            self.__state = self.State.END
+        self._data_response.append(line)
+        if len(self._data_response) >= self._lines_left:
+            self._state = self.State.END
 
-    def __sighup_end(self, line: str) -> None:
+    def _sighup_end(self, line: str) -> None:
         """
         Handle a SIGHUP END line by resetting the parser.
 
@@ -268,7 +266,7 @@ class ReplyPacketParser:
                 f"lircd, got `{line}` instead."
             )
 
-    def __end(self, line: str) -> None:
+    def _end(self, line: str) -> None:
         """
         Handle a END line by transitioning the parser's state
         to finished. This means we have finished reading in the
@@ -281,7 +279,7 @@ class ReplyPacketParser:
             LircdInvalidReplyPacketError: If the line does not contain END.
         """
         if line == "END":
-            self.__state = self.State.FINISHED
+            self._state = self.State.FINISHED
         else:
             raise LircdInvalidReplyPacketError(
                 "Expected an END line from lircd's reply packet, "
@@ -300,4 +298,4 @@ class ReplyPacketParser:
         if not line:
             return
 
-        self.__fsm[self.__state](line)
+        self._fsm[self._state](line)

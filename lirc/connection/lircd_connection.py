@@ -44,11 +44,11 @@ class LircdConnection(AbstractConnection):
         if socket is None:
             socket = default.socket
 
-        self.__buffer = deque()
-        self.__buffer_size = 4096
-        self.__address = address
-        self.__socket = socket
-        self.__socket.settimeout(timeout)
+        self._buffer = deque()
+        self._buffer_size = 4096
+        self._address = address
+        self._socket = socket
+        self._socket.settimeout(timeout)
 
     def connect(self):
         """
@@ -59,11 +59,11 @@ class LircdConnection(AbstractConnection):
                 is not running.
         """
         try:
-            self.__socket.connect(self.__address)
+            self._socket.connect(self._address)
         except FileNotFoundError:
             raise LircdConnectionError(
-                f"Could not connect to lircd at {self.__address} with socket "
-                f"{self.__socket}. Did you start the `lircd` daemon?"
+                f"Could not connect to lircd at {self._address} with socket "
+                f"{self._socket}. Did you start the `lircd` daemon?"
             )
         except Exception as error:
             raise LircdConnectionError(error)
@@ -77,13 +77,13 @@ class LircdConnection(AbstractConnection):
         Returns:
             The current address being used.
         """
-        return self.__address
+        return self._address
 
     def close(self):
         """
         Closes the socket connection.
         """
-        self.__socket.close()
+        self._socket.close()
 
     def send(self, data: str):
         """
@@ -101,7 +101,7 @@ class LircdConnection(AbstractConnection):
         if not data.endswith("\n"):
             data += "\n"
 
-        self.__socket.sendall(data.encode("utf-8"))
+        self._socket.sendall(data.encode("utf-8"))
 
     def readline(self) -> str:
         """
@@ -125,27 +125,27 @@ class LircdConnection(AbstractConnection):
         Returns:
             A line from the lircd socket.
         """
-        if len(self.__buffer) >= 1:
-            return self.__buffer.popleft()
+        if len(self._buffer) >= 1:
+            return self._buffer.popleft()
 
         try:
-            packet = self.__socket.recv(self.__buffer_size)
+            packet = self._socket.recv(self._buffer_size)
 
             if packet.endswith(b"\n"):
                 packet = packet.strip()
 
             if b"\n" in packet:
-                self.__buffer.extend(
+                self._buffer.extend(
                     line.decode("utf-8") for line in packet.split(b"\n")
                 )
             else:
-                self.__buffer.append(packet.decode("utf-8"))
+                self._buffer.append(packet.decode("utf-8"))
 
-            return self.__buffer.popleft()
+            return self._buffer.popleft()
         except socket.timeout:
             raise TimeoutError(
                 "could not find any data on the socket after "
-                f"{self.__socket.gettimeout()} seconds, socket timed out."
+                f"{self._socket.gettimeout()} seconds, socket timed out."
             )
         except socket.error as error:
             raise LircdSocketError(

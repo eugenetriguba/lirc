@@ -29,13 +29,13 @@ class Client:
             raise TypeError("`connection` must be an instance of `AbstractConnection`")
 
         # Used for start_repeat and stop_repeat
-        self.__last_send_start_remote = None
-        self.__last_send_start_key = None
+        self._last_send_start_remote = None
+        self._last_send_start_key = None
 
-        self.__connection = connection
-        self.__connection.connect()
+        self._connection = connection
+        self._connection.connect()
 
-    def __send_command(self, command: str) -> Union[str, List[str]]:
+    def _send_command(self, command: str) -> Union[str, List[str]]:
         """
         Send a command to lircd.
 
@@ -45,11 +45,11 @@ class Client:
         Returns:
             The data from the lirc response packet.
         """
-        self.__connection.send(command)
+        self._connection.send(command)
 
         parser = ReplyPacketParser()
         while not parser.is_finished:
-            line = self.__connection.readline()
+            line = self._connection.readline()
             parser.feed(line)
 
         parser_data = parser.data[0] if len(parser.data) == 1 else parser.data
@@ -63,7 +63,7 @@ class Client:
 
     def close(self) -> None:
         """Close the connection to the socket."""
-        self.__connection.close()
+        self._connection.close()
 
     def send_once(self, remote: str, key: str, repeat_count: int = 0) -> None:
         """
@@ -85,7 +85,7 @@ class Client:
         Raises:
             LircdCommandFailure: If the command fails.
         """
-        self.__send_command(f"SEND_ONCE {remote} {key} {repeat_count}")
+        self._send_command(f"SEND_ONCE {remote} {key} {repeat_count}")
 
     def send_start(self, remote: str, key: str) -> None:
         """
@@ -101,9 +101,9 @@ class Client:
         Raises:
             LircdCommandFailure: If the command fails.
         """
-        self.__last_send_start_remote = remote
-        self.__last_send_start_key = key
-        self.__send_command(f"SEND_START {remote} {key}")
+        self._last_send_start_remote = remote
+        self._last_send_start_key = key
+        self._send_command(f"SEND_START {remote} {key}")
 
     def send_stop(self, remote: str = "", key: str = "") -> None:
         """
@@ -121,13 +121,13 @@ class Client:
         Raises:
             LircdCommandFailure: If the command fails.
         """
-        if not remote and self.__last_send_start_remote:
-            remote = self.__last_send_start_remote
+        if not remote and self._last_send_start_remote:
+            remote = self._last_send_start_remote
 
-        if not key and self.__last_send_start_key:
-            key = self.__last_send_start_key
+        if not key and self._last_send_start_key:
+            key = self._last_send_start_key
 
-        self.__send_command(f"SEND_STOP {remote} {key}")
+        self._send_command(f"SEND_STOP {remote} {key}")
 
     def list_remotes(self) -> List[str]:
         """
@@ -140,7 +140,7 @@ class Client:
         Returns:
             The list of all remotes.
         """
-        return self.__send_command("LIST")
+        return self._send_command("LIST")
 
     def list_remote_keys(self, remote: str) -> List[str]:
         """
@@ -155,7 +155,7 @@ class Client:
         Returns:
             The list of keys from the remote.
         """
-        return self.__send_command(f"LIST {remote}")
+        return self._send_command(f"LIST {remote}")
 
     def start_logging(self, path: Union[str, Path]) -> None:
         """
@@ -168,7 +168,7 @@ class Client:
         Raises:
             LircdCommandFailure: If the command fails.
         """
-        self.__send_command(f"SET_INPUTLOG {path}")
+        self._send_command(f"SET_INPUTLOG {path}")
 
     def stop_logging(self) -> None:
         """
@@ -179,7 +179,7 @@ class Client:
         """
         # When calling SET_INPUTLOG without the path argument,
         # it will stop logging and close the logfile.
-        self.__send_command("SET_INPUTLOG")
+        self._send_command("SET_INPUTLOG")
 
     def version(self) -> str:
         """
@@ -191,7 +191,7 @@ class Client:
         Returns:
             The version of LIRC being used.
         """
-        return self.__send_command("VERSION")
+        return self._send_command("VERSION")
 
     def driver_option(self, key: str, value: str) -> None:
         """
@@ -204,7 +204,7 @@ class Client:
         Raises:
             LircdCommandFailure: If the command fails.
         """
-        self.__send_command(f"DRV_OPTION {key} {value}")
+        self._send_command(f"DRV_OPTION {key} {value}")
 
     def simulate(
         self, remote: str, key: str, repeat_count: int = 1, keycode: int = 0
@@ -232,7 +232,7 @@ class Client:
         Raises:
             LircdCommandFailure: If the command fails.
         """
-        self.__send_command(
+        self._send_command(
             "SIMULATE %016d %02d %s %s\n" % (keycode, repeat_count, key, remote)
         )
 
@@ -262,4 +262,4 @@ class Client:
             for transmitter in transmitters:
                 mask |= 1 << (int(transmitter) - 1)
 
-        self.__send_command(f"SET_TRANSMITTERS {mask}")
+        self._send_command(f"SET_TRANSMITTERS {mask}")
