@@ -43,9 +43,14 @@ Linux, which has built-in support in the kernel for recieving IR signals, you
 can try using `python-evdev <https://python-evdev.readthedocs.io/en/latest/>`_.
 They have a `tutorial on reading the events <https://python-evdev.readthedocs.io/en/latest/tutorial.html#reading-events>`_.
 
-
 More information on the lircd daemon, socket interface,
 reply packet format, etc. can be found at https://www.lirc.org/html/lircd.html
+
+Maintainance Status
+-------------------
+
+This project is maintained, but it is not actively developed.
+It is feature complete for my purposes.
 
 Installation
 ------------
@@ -63,12 +68,6 @@ system as well.
 
 More information on that can be found in the `installation <https://lirc.readthedocs.io/en/latest/installation.html>`_
 portion of the full documentation.
-
-Maintainance Status
--------------------
-
-This project is maintained, but it is not actively developed.
-It is feature complete for my purposes.
 
 Quick Start
 -----------
