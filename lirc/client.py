@@ -1,6 +1,7 @@
 from pathlib import Path
-from typing import List, Union
+from typing import List, Type, Union
 
+from .connection.abstract_connection import AbstractConnection
 from .connection.lircd_connection import LircdConnection
 from .exceptions import LircdCommandFailureError
 from .reply_packet_parser import ReplyPacketParser
@@ -9,7 +10,7 @@ from .reply_packet_parser import ReplyPacketParser
 class Client:
     """Communicate with the lircd daemon."""
 
-    def __init__(self, connection: LircdConnection = None) -> None:
+    def __init__(self, connection: Type[AbstractConnection] = None) -> None:
         """
         Initialize the client by connecting to the lircd socket.
 
@@ -18,14 +19,14 @@ class Client:
             depending on the operating system if one is not provided.
 
         Raises:
-            TypeError: If connection is not an instance of LircdConnection.
+            TypeError: If connection is not an instance of AbstractConnection.
             LircdConnectionError: If the socket cannot connect to the address.
         """
         if not connection:
             connection = LircdConnection()
 
-        if not isinstance(connection, LircdConnection):
-            raise TypeError("`connection` must be an instance of `LircdConnection`")
+        if not isinstance(connection, AbstractConnection):
+            raise TypeError("`connection` must be an instance of `AbstractConnection`")
 
         # Used for start_repeat and stop_repeat
         self.__last_send_start_remote = None

@@ -20,19 +20,19 @@ def test_that_custom_connections_can_be_used(mock_socket):
     assert client._Client__connection == connection
 
 
-def test_that_custom_connection_that_is_not_a_lircd_connection_raises_error(
+def test_that_custom_connection_that_is_not_an_abstract_connection_raises_error(
     mock_connection,
 ):
     """
     lirc.Client.__init__
 
     Ensure that passing in something that is not an instance of
-    LircdConnection raise a TypeError.
+    AbstractConnection raises a TypeError.
     """
     with pytest.raises(TypeError) as error:
         Client(connection=Client(connection=mock_connection))  # SUT
 
-    assert "must be an instance of `LircdConnection`" in str(error)
+    assert "must be an instance of `AbstractConnection`" in str(error)
 
 
 def test_that_no_connection_passed_in_creates_default_one():
