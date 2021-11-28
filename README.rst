@@ -64,6 +64,12 @@ system as well.
 More information on that can be found in the `installation <https://lirc.readthedocs.io/en/latest/installation.html>`_
 portion of the full documentation.
 
+Maintainance Status
+-------------------
+
+This project is maintained, but it is not actively developed.
+It is feature complete for my purposes.
+
 Quick Start
 -----------
 
