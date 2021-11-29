@@ -12,15 +12,15 @@ Unreleased
 
 **Changed**
 
-- All double underscore (`__`) internal attributes have been changed to instead
-  be prefixed by a single underscore (`_`). This removes the name mangling that Python
+- All double underscore (``__``) internal attributes have been changed to instead
+  be prefixed by a single underscore (``_``). This removes the name mangling that Python
   does on those attributes.
 
 **Fixed**
 
-- `lirc.Client` will throw a `TypeError` only if the passed `connection`
-  is not an instance of `AbstractConnection`. Previously, it would throw
-  a `TypeError` if `connection` was not an `LircdConnection`.
+- ``lirc.Client`` will throw a ``TypeError`` only if the passed ``connection``
+  is not an instance of ``AbstractConnection``. Previously, it would throw
+  a ``TypeError`` if ``connection`` was not an ``LircdConnection``.
 
 2.0.0 - 2021-04-18
 ------------------
@@ -46,7 +46,7 @@ Unreleased
   ``/opt/local/var/run/lirc/lircd``. This is unlikely to have
   an impact since the previous default directory was incorrect.
 
-  On v1 and on macOS, this can also be worked around by explicitly specifying the connection path rather
+  With v1 and on macOS, this can also be worked around by explicitly specifying the connection path rather
   than relying on the default.
 
   .. code-block:: python
