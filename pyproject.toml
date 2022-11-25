@@ -6,10 +6,7 @@ authors = ["Eugene Triguba <eugenetriguba@gmail.com>"]
 license = "MIT"
 readme = "README.rst"
 repository = "https://github.com/eugenetriguba/lirc"
-keywords = [
-    "LIRC",
-    "IR"
-]
+keywords = ["LIRC", "IR"]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "License :: OSI Approved :: MIT License",
@@ -26,11 +23,6 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 
-packages = [
-    { include = "lirc" },
-    { include = "tests", format = "sdist" }
-]
-
 [tool.taskipy.tasks]
 test = "task test_cov_missing"
 test_unit = "pytest tests/"
@@ -44,8 +36,8 @@ python = "^3.6"
 [tool.poetry.dev-dependencies]
 flake8 = "^3.8.3"
 isort = "^5.0.4"
-pytest = "^6.0"
-pytest-cov = "^2.10.0"
+pytest = "^7"
+pytest-cov = "^4"
 bump2version = "^1.0.0"
 taskipy = "^1.2.1"
 black = "^20.8b1"

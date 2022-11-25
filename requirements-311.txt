@@ -1,0 +1,5 @@
+# We need <6.3 for Python 3.6 but >=6.3 for Python 3.11
+# Because the poetry lockfile resolves to one version, we're
+# overriding it here for Python 3.11 in a bit of a hacky way
+# where this is being installed on CI after the `poetry install`.
+coverage>=6.5,<7; python_version >= "3.11"
