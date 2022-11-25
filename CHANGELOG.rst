@@ -7,6 +7,15 @@ The format is based on `Keep a
 Changelog <https://keepachangelog.com/en/1.0.0/>`_, and this project
 adheres to `Semantic Versioning <https://semver.org/spec/v2.0.0.html>`_.
 
+Unreleased
+------------------
+
+**Added**
+
+- Official support for Python 3.11. There is no user-facing change here.
+  However, the tests are now also being run against Python 3.11 on CI and
+  being advertised as supported via a pypi classifier.
+
 2.0.1 - 2021-11-28
 ------------------
 
