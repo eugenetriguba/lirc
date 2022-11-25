@@ -7,25 +7,35 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.6, 3.7, 3.8, 3.9, '3.10', '3.11', '3.12.0-alpha.2']
+        versions: [
+          {python: '3.6', poetry: '1.1.15'},
+          {python: '3.7', poetry: '1.2.2'},
+          {python: '3.8', poetry: '1.2.2'},
+          {python: '3.9', poetry: '1.2.2'},
+          {python: '3.10', poetry: '1.2.2'},
+          {python: '3.11', poetry: '1.2.2'},
+          {python: '3.12.0-alpha.2', poetry: '1.2.2'},
+        ]
 
     steps:
       - uses: actions/checkout@v3
 
-      - name: Set up Python ${{ matrix.python-version }}
+      - name: Set up Poetry
+        run: pipx install poetry ${{ matrix.versions.poetry }}
+
+      - name: Set up Python ${{ matrix.versions.python }}
         uses: actions/setup-python@v4
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: ${{ matrix.versions.python }}
+          cache: 'poetry'
 
-      - name: Install dependencies
+      - name: Install Dependencies
         run: |
-          pip install poetry
           poetry install -v
           poetry run pip install -r requirements-311.txt
 
       - name: Install system LIRC
-        run: |
-          sudo apt-get install lirc
+        run: sudo apt-get install lirc
 
       - name: Run tests
         run: poetry run pytest -v tests/ --cov=lirc/ --cov-report=xml
