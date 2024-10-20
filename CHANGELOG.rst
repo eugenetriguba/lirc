@@ -12,7 +12,11 @@ Unreleased
 
 **Added**
 
-- Official support for Python 3.12 and 3.13.
+- Support for Python 3.12 and 3.13.
+
+**Removed**
+
+- Support for Python 3.6, 3.7, and 3.8. These versions are no longer supported by Python.
 
 2.0.2 - 2022-11-25
 ------------------

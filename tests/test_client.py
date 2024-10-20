@@ -165,5 +165,5 @@ def test_last_send_start_remote_and_key_is_used(mock_client_and_connection):
     client.send_stop()  # SUT
 
     connection._socket.sendall.assert_called_with(
-        "SEND_STOP remote key\n".encode("utf-8")
+        b"SEND_STOP remote key\n"
     )

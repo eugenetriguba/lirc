@@ -3,8 +3,7 @@ from typing import Union
 
 
 class AbstractConnection(ABC):
-    """
-    Presents the interface for what we want
+    """Presents the interface for what we want
     a connection to look like and any base
     methods it should have.
     """

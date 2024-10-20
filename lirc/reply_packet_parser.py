@@ -18,8 +18,7 @@ class ReplyPacketParser:
         FINISHED = auto()
 
     class Result(IntEnum):
-        """
-        Packet parsing results. We start at undetermined
+        """Packet parsing results. We start at undetermined
         and move to either success or fail.
         """
 
@@ -28,8 +27,7 @@ class ReplyPacketParser:
         UNDETERMINED = auto()
 
     def __init__(self):
-        """
-        Reads and parses reply packets sent from lircd.
+        """Reads and parses reply packets sent from lircd.
 
         The reply packet is parsed by setting up a fsm
         (finite state machine) and using an internal state
@@ -89,8 +87,7 @@ class ReplyPacketParser:
 
     @property
     def data(self) -> list:
-        """
-        Retrieves the data response of the reply packet.
+        """Retrieves the data response of the reply packet.
 
         Returns:
             The data response.
@@ -99,8 +96,7 @@ class ReplyPacketParser:
 
     @property
     def is_finished(self) -> bool:
-        """
-        Checks whether we are in the finished state.
+        """Checks whether we are in the finished state.
 
         Returns:
             True if we are in the finished state; False otherwise.
@@ -109,8 +105,7 @@ class ReplyPacketParser:
 
     @property
     def success(self) -> bool:
-        """
-        Checks whether we have a success result.
+        """Checks whether we have a success result.
 
         Returns:
             True if the command result is success; False otherwise.
@@ -118,8 +113,7 @@ class ReplyPacketParser:
         return self._command_result == self.Result.SUCCESS
 
     def _begin(self, line: str) -> None:
-        """
-        Handles the BEGIN state. This should be the
+        """Handles the BEGIN state. This should be the
         state we start in and transition to reading in
         the command.
 
@@ -137,8 +131,7 @@ class ReplyPacketParser:
             )
 
     def _command(self, line: str) -> None:
-        """
-        Handles the COMMAND state. For parsing the reply packet,
+        """Handles the COMMAND state. For parsing the reply packet,
         we don't care too much about this state. As long as we got
         a command, we move on to check the result. However, the
         command could be a SIGHUP in which case, we want to ensure
@@ -162,8 +155,7 @@ class ReplyPacketParser:
             )
 
     def _result(self, line: str) -> None:
-        """
-        Handles the RESULT state. An lircd result is
+        """Handles the RESULT state. An lircd result is
         either SUCCESS or ERROR, followed by data.
 
         Args:
@@ -183,8 +175,7 @@ class ReplyPacketParser:
             )
 
     def _data(self, line: str) -> None:
-        """
-        Handles the DATA state. In this state,
+        """Handles the DATA state. In this state,
         we could either be finished now if there is
         no data from the response or move to reading
         in how many lines of data there is.
@@ -205,8 +196,7 @@ class ReplyPacketParser:
             )
 
     def _line_count_left(self, line: str) -> None:
-        """
-        Handles the LINE COUNT LEFT state. This corresponds
+        """Handles the LINE COUNT LEFT state. This corresponds
         to the `n` line in the packet format, since it tells
         us how many lines of data we have to read in.
 
@@ -228,8 +218,7 @@ class ReplyPacketParser:
         self._state = self.State.END if self._lines_left == 0 else self.State.DATA_BODY
 
     def _data_body(self, line: str) -> None:
-        """
-        Handles the DATA BODY state by appending
+        """Handles the DATA BODY state by appending
         every line we recieve to the data response.
 
         Because the reply packet tells us how many lines
@@ -245,8 +234,7 @@ class ReplyPacketParser:
             self._state = self.State.END
 
     def _sighup_end(self, line: str) -> None:
-        """
-        Handle a SIGHUP END line by resetting the parser.
+        """Handle a SIGHUP END line by resetting the parser.
 
         SIGHUP packages may appear just after a command has been sent
         to lircd, so this is to make sure they are not confused with
@@ -267,8 +255,7 @@ class ReplyPacketParser:
             )
 
     def _end(self, line: str) -> None:
-        """
-        Handle a END line by transitioning the parser's state
+        """Handle a END line by transitioning the parser's state
         to finished. This means we have finished reading in the
         reply packet.
 
@@ -287,8 +274,7 @@ class ReplyPacketParser:
             )
 
     def feed(self, line: str) -> None:
-        """
-        Feed a line from the reply packet into the parser.
+        """Feed a line from the reply packet into the parser.
 
         Args:
             A line from the lircd connection to feed in.

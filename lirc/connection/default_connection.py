@@ -7,16 +7,14 @@ from lirc.exceptions import UnsupportedOperatingSystemError
 
 class DefaultConnection:
     def __init__(self):
-        """
-        This class provides our operating specific default
+        """This class provides our operating specific default
         connection parameters.
         """
         self._operating_system = platform.system()
 
     @property
     def socket(self) -> socket.socket:
-        """
-        Retreives the default socket that should be used
+        """Retreives the default socket that should be used
         for lircd on the current operating system.
 
         Returns:
@@ -26,7 +24,7 @@ class DefaultConnection:
             UnsupportedOperatingSystemError: If the OS is not Linux, Windows,
             or Darwin.
         """
-        if self._operating_system == "Linux" or self._operating_system == "Darwin":
+        if self._operating_system in ("Linux", "Darwin"):
             return socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
 
         if self._operating_system == "Windows":
@@ -39,8 +37,7 @@ class DefaultConnection:
 
     @property
     def address(self) -> Union[str, Tuple[str, int]]:
-        """
-        Retrieves the default address that should be used
+        """Retrieves the default address that should be used
         for lircd on the current operating system.
 
         Returns:

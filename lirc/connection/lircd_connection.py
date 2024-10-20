@@ -2,7 +2,8 @@ import socket
 from collections import deque
 from typing import Union
 
-from ..exceptions import LircdConnectionError, LircdSocketError
+from lirc.exceptions import LircdConnectionError, LircdSocketError
+
 from .abstract_connection import AbstractConnection
 from .default_connection import DefaultConnection
 
@@ -14,8 +15,7 @@ class LircdConnection(AbstractConnection):
         socket: socket.socket = None,
         timeout: float = 5.0,
     ):
-        """
-        Initialize the LircdConnection. This sets up state we'll
+        """Initialize the LircdConnection. This sets up state we'll
         need, but it does not connect to that socket. To connect,
         we can call connect() after initialization.
 
@@ -51,8 +51,7 @@ class LircdConnection(AbstractConnection):
         self._socket.settimeout(timeout)
 
     def connect(self):
-        """
-        Connect to the socket at the address both specified on init.
+        """Connect to the socket at the address both specified on init.
 
         Raises:
             LircdConnectionError: If the address is invalid or lircd
@@ -70,8 +69,7 @@ class LircdConnection(AbstractConnection):
 
     @property
     def address(self) -> str:
-        """
-        Retrieve the address that this lircd connection
+        """Retrieve the address that this lircd connection
         is connected to.
 
         Returns:
@@ -80,14 +78,12 @@ class LircdConnection(AbstractConnection):
         return self._address
 
     def close(self):
-        """
-        Closes the socket connection.
+        """Closes the socket connection.
         """
         self._socket.close()
 
     def send(self, data: str):
-        """
-        Send a commend to the lircd socket connection.
+        """Send a commend to the lircd socket connection.
 
         Args:
             data: The data to send to the lircd socket.
@@ -104,8 +100,7 @@ class LircdConnection(AbstractConnection):
         self._socket.sendall(data.encode("utf-8"))
 
     def readline(self) -> str:
-        """
-        Read a line of data from the lircd socket.
+        """Read a line of data from the lircd socket.
 
         We read 4096 bytes at a time as the buffer size.
         Therefore after data is read from the socket, all
@@ -147,7 +142,7 @@ class LircdConnection(AbstractConnection):
                 "could not find any data on the socket after "
                 f"{self._socket.gettimeout()} seconds, socket timed out."
             )
-        except socket.error as error:
+        except OSError as error:
             raise LircdSocketError(
                 f"An error occurred while reading from the lircd socket: {error}"
             )

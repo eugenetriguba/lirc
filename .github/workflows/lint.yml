@@ -1,0 +1,25 @@
+name: Lint
+
+on: [push]
+
+jobs:
+  run-linters:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Set up Poetry
+        run: pipx install poetry==1.8.4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.13
+          cache: "poetry"
+
+      - name: Install Dependencies
+        run: poetry install --only=dev --only=lint
+
+      - name: Run linters
+        run: poetry run task lint

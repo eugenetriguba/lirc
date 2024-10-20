@@ -98,7 +98,7 @@ def test_that_send_adds_a_newline_to_the_end(mock_connection, test_command):
     mock_connection.send(test_command)  # SUT
 
     mock_connection._socket.sendall.assert_called_with(
-        f"{test_command}\n".encode("utf-8")
+        f"{test_command}\n".encode()
     )
 
 
@@ -113,7 +113,7 @@ def test_that_send_does_not_add_too_many_newlines(mock_connection):
 
     mock_connection.send(command)  # SUT
 
-    mock_connection._socket.sendall.assert_called_with(f"{command}".encode("utf-8"))
+    mock_connection._socket.sendall.assert_called_with(f"{command}".encode())
 
 
 @pytest.mark.parametrize("test_command", [5, False, 0.1, b"hello"])
