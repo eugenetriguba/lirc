@@ -36,7 +36,7 @@ jobs:
         run: sudo apt-get install lirc
 
       - name: Run tests
-        run: poetry run task
+        run: poetry run task test_ci
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
