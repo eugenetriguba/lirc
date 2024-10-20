@@ -87,7 +87,7 @@ def test_that_close_closes_the_socket(mock_client_and_connection):
         (
             "simulate",
             {"remote": "REMOTE", "key": "KEY"},
-            "SIMULATE 0000000000000000 01 KEY REMOTE",
+            "SIMULATE 0000000000000000 00 KEY REMOTE",
         ),
         (
             "simulate",
@@ -164,6 +164,4 @@ def test_last_send_start_remote_and_key_is_used(mock_client_and_connection):
 
     client.send_stop()  # SUT
 
-    connection._socket.sendall.assert_called_with(
-        b"SEND_STOP remote key\n"
-    )
+    connection._socket.sendall.assert_called_with(b"SEND_STOP remote key\n")
