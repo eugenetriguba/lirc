@@ -18,6 +18,14 @@ adheres to `Semantic Versioning <https://semver.org/spec/v2.0.0.html>`_.
 
 - Support for Python 3.6, 3.7, and 3.8. These versions are no longer supported by Python.
 
+**Fixed**
+
+- The ``Client``'s ``simulate`` method was sending the command twice by default.
+  The ``repeat_count`` keyword argument was set to 1 instead of 0. This now defaults to 0.
+
+  On older versions, this can be worked around by explicitly setting the ``repeat_count`` keyword
+  argument to 0 when calling the ``simulate`` method.
+
 2.0.2 - 2022-11-25
 ------------------
 
