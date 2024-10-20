@@ -10,7 +10,7 @@ LIRC Python Package
 .. image:: https://readthedocs.org/projects/lirc/badge/?version=latest
   :target: https://lirc.readthedocs.io/en/latest/?badge=latest
   :alt: Documentation Status
-.. image:: https://github.com/eugenetriguba/lirc/workflows/python%20package%20ci/badge.svg?branch=master
+.. image:: https://github.com/eugenetriguba/lirc/actions/workflows/test.yml/badge.svg?branch=main
   :target: https://github.com/eugenetriguba/lirc/actions/
   :alt: Build Status
 .. image:: https://codecov.io/gh/eugenetriguba/lirc/graph/badge.svg
