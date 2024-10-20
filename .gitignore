@@ -11,6 +11,7 @@ __pycache__/
 dist/
 .python-version
 .venv/
+.ruff_cache
 
 # asdf
 .tool-versions
