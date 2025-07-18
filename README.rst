@@ -1,3 +1,5 @@
+:warning: See https://git.sr.ht/~eugenetriguba/lirc for the latest development.
+
 LIRC Python Package
 ===================
 
